@@ -9,6 +9,7 @@ This system exists to perfectly preserve and protect irreplaceable development d
 - **Complete History:** Every decision, mistake, and success is recorded
 - **No Overwriting:** New information creates new records, never replaces old ones
 - **File Protection:** Files can NEVER be modified or deleted once created
+- **Mandatory Backup Before Commit:** All Git commits MUST be preceded by comprehensive backups
 - **Time Verification:** Always verify correct GMT time before recording timestamps
 - **GMT Timezone Only:** Use only GMT/UTC timezone to avoid regional/VPN issues
 
@@ -23,6 +24,8 @@ This system exists to perfectly preserve and protect irreplaceable development d
 - **Use descriptive, searchable names** - ensure data discoverability
 - **Build incrementally** - only add what's actually needed
 - **Multiple backup strategies** - redundancy at every level
+- **Data protection first** - always backup before any changes or commits
+- **Backup-first Git operations** - never commit without comprehensive backup verification
 - **Proactive monitoring** - detect problems before they cause data loss
 - **Data is sacred** - irreplaceable information requires maximum protection
 
@@ -50,6 +53,7 @@ This system exists to perfectly preserve and protect irreplaceable development d
 
 ### Master Script Commands
 - **Save chat report:** `python data_core.py save chat`
+- **Commit with data protection:** `python data_core.py commit "live conversation context"`
 - **Additional commands** will be added as new data types are implemented
 
 ### Workflow
@@ -58,6 +62,7 @@ This system exists to perfectly preserve and protect irreplaceable development d
 3. **Run master script** - use the appropriate command to create/access data
 4. **Follow frameworks** - ensure your data follows established patterns
 5. **Validate results** - check that the operation completed successfully
+6. **Commit with protection** - use `python data_core.py commit` for safe version control
 
 ## Enhanced Framework Capabilities
 
@@ -77,6 +82,13 @@ This system exists to perfectly preserve and protect irreplaceable development d
 - **How to use:** `python data_core.py save chat`
 - **Framework Version:** 1.1 with Technical Specifications section
 - **Enhanced Features:** Content quality validation, file integrity verification, comprehensive conversation capture
+
+### Git Commit System
+- **Purpose:** Safe version control with mandatory backup protection and zero information loss
+- **Status:** Implemented and ready to use
+- **How to use:** `python data_core.py commit "live conversation context"`
+- **Protection Features:** Three-tier backup system (major/standard/minor), chat-first workflow, backup verification
+- **Data Safety:** Chat saved first, backups created before commit, automatic cleanup of old backups
 
 ### Process System
 - **Purpose:** Automated rule enforcement with verbose output and validation
@@ -107,6 +119,14 @@ This system exists to perfectly preserve and protect irreplaceable development d
 ## Data Protection & Health Monitoring
 - **Irreplaceable Data:** All stored information is irreplaceable and requires maximum protection
 - **Multiple Backup Strategies:** Redundancy at every level to prevent data loss
+- **Three-Tier Backup System:** Major/Standard/Minor backups based on change significance
+  - **Major backups:** Significant structural changes, new data types, framework updates
+  - **Standard backups:** Moderate feature changes, multiple file modifications
+  - **Minor backups:** Routine updates, small fixes, every commit gets at least minor backup
+  - **Retention policy:** Keep last 5 of each backup type on GitHub branches
+- **Mandatory Pre-Commit Backup:** No Git commit allowed without successful backup creation
+- **Backup Verification:** All backups verified before allowing commit to proceed
+- **Chat-First Workflow:** Always save current conversation before any Git operations
 - **Continuous Validation:** Automated checks ensure data integrity and framework compliance
 - **Health Monitoring:** System continuously monitors file health and data quality
 - **Early Warning Systems:** Detect potential problems before they cause data loss
@@ -136,9 +156,10 @@ This system exists to perfectly preserve and protect irreplaceable development d
 - **Single source of truth** - each rule or requirement exists in only one README
 
 ## Current Status
-- **Implemented:** Enhanced system structure, chat system with Framework v1.1, process system, comprehensive data protection
-- **Ready to use:** Advanced chat reports, enhanced validation (50+ chars per section), file integrity verification, rule enforcement, health monitoring
+- **Implemented:** Enhanced system structure, chat system with Framework v1.1, Git commit system with three-tier backup protection, process system, comprehensive data protection
+- **Ready to use:** Advanced chat reports, safe Git operations with mandatory backups, enhanced validation (50+ chars per section), file integrity verification, rule enforcement, health monitoring
+- **Protection Systems:** Three-tier backup system (major/standard/minor), chat-first workflow, backup verification before commits
 - **Framework Standards:** Framework v1.1 with Technical Specifications section, enhanced content quality requirements
 - **Approach:** TDD - build only what's actually required, continuously improve existing systems
 - **Universal scope:** Ready for any domain where data preservation and protection matter
-- **Recent Enhancements:** Removed sequential numbering, implemented temporal filenames with UUIDs, added comprehensive validation
+- **Recent Enhancements:** Implemented Git commit process with mandatory backup protection, chat-first workflow, automatic backup cleanup
