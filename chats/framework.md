@@ -10,7 +10,7 @@ type: chat
 framework: framework
 id: [UUID - globally unique identifier]
 timestamp: [ISO timestamp in GMT]
-framework_version: 1.0
+framework_version: 1.1
 ---
 ```
 
@@ -26,6 +26,7 @@ framework_version: 1.0
 - **Implementation Details:** Specific technical decisions, how principles were implemented
 - **Current Status:** What's complete vs. in progress, what's working vs. what needs work
 - **Additional Notes:** Any other information that was discussed
+- **Technical Specifications:** System architecture, file metrics, configuration details, and technical parameters
 
 ## AI Historical Record Building
 - **Perfect Chaining:** Each report designed to connect seamlessly with others
@@ -137,3 +138,11 @@ Excited about building a system that can capture every aspect of my professional
 
 ## Additional Notes
 This conversation establishes the foundational principles for the data-core system. The focus on data preservation and TDD approach will ensure we build exactly what's needed while maintaining perfect historical records.
+
+## Technical Specifications
+- **System Architecture:** Hierarchical framework structure with self-contained data types
+- **Framework Version:** 1.0 with standardized sections and validation rules
+- **File Naming:** chat-YYYY-MM-DD-HH-MM.md for temporal organization
+- **UUID Format:** Standard UUID4 for globally unique identification
+- **Timestamp Format:** ISO 8601 with UTC timezone for consistency
+- **Validation Rules:** Minimum content thresholds and quality checks

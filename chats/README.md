@@ -20,11 +20,13 @@ For full system context, rules, and philosophy, see: `../README.md`
 ## Purpose
 **Builds perfect, complete, chainable chat history for AI systems.** Each report captures everything since the last report, creating a zero-gap historical record that any AI can reconstruct and analyze. This is not just saving conversations - it's building a perfect, searchable, reconstructable history of development decisions, insights, and professional growth.
 
-## Framework: Framework
+## Framework: Framework v1.1
 - **Type:** chat
 - **ID:** Globally unique UUID for merge safety
 - **Timestamp:** When the report was created (GMT timezone)
 - **Content:** Key insights, decisions, questions answered, action items
+- **Version:** 1.1 with enhanced Technical Specifications section
+- **Enhanced Standards:** Minimum 50 characters per section, comprehensive validation
 
 ## File Rules
 - **Zero Gap Requirement:** Each report must cover ALL information since the last report
@@ -44,9 +46,11 @@ For full system context, rules, and philosophy, see: `../README.md`
 ## AI System Rules
 - **Status: UNFIXED** - AI systems can create, modify, and delete files
 - **Content Capture Required** - AI must capture actual conversation content, not empty templates
-- **Framework Compliance** - All files must follow the Chat Report Framework
+- **Framework Compliance** - All files must follow the Chat Report Framework v1.1
+- **Enhanced Validation** - Minimum 50 characters per section, comprehensive content quality checks
+- **Technical Specifications** - Include system architecture, file metrics, and configuration details
 - **Zero Gap Enforcement** - Each report must cover all information since the last report
-- **Perfect Record Building** - Create complete, AI-readable historical records
+- **Perfect Record Building** - Create complete, AI-readable historical records with technical details
 
 ## Related Systems
 - **Master System:** `../README.md` - Full system rules and philosophy
@@ -69,4 +73,13 @@ For full system context, rules, and philosophy, see: `../README.md`
 - **UUID metadata** - globally unique identification for merge safety
 
 ## Additional Notes
-This system creates perfect, AI-readable historical records that can be chained together to recreate complete development journeys. Each report preserves rich context and ensures zero information loss, building a comprehensive record that any AI system can analyze and understand. The goal is perfect historical preservation for future AI processing and analysis. UUIDs ensure merge safety when combining data cores, while temporal filenames provide human-readable organization and querying capabilities.
+This system creates perfect, AI-readable historical records that can be chained together to recreate complete development journeys. Each report preserves rich context and ensures zero information loss, building a comprehensive record that any AI system can analyze and understand. The goal is perfect historical preservation for future AI processing and analysis. 
+
+**Framework v1.1 Features:**
+- **Technical Specifications** section for system architecture and metrics
+- **Enhanced validation** with minimum content requirements (50+ chars per section)
+- **File integrity verification** to ensure content is actually preserved
+- **Comprehensive conversation capture** instead of empty templates
+- **Temporal filenames with UUIDs** for human readability and merge safety
+
+UUIDs ensure merge safety when combining data cores, while temporal filenames provide human-readable organization and querying capabilities. The system now produces professional-grade documentation suitable for portfolios and collaboration.
