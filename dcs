@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+"""
+Data Core System - Quick Command Wrapper
+Convenient shortcuts for common operations.
+"""
+
+import sys
+import os
+import subprocess
+
+def main():
+    if len(sys.argv) < 2:
+        print("Data Core System - Quick Commands")
+        print("=" * 40)
+        print("Usage:")
+        print("  ./dcs commit \"message\"     - Backup + commit")  
+        print("  ./dcs backup \"description\" - Backup only")
+        print("  ./dcs save                 - Save chat report")
+        print("  ./dcs help                 - Full help")
+        print()
+        print("Examples:")
+        print("  ./dcs commit \"Add new feature\"")
+        print("  ./dcs backup \"Before major changes\"")
+        print("  ./dcs save")
+        return
+
+    command = sys.argv[1].lower()
+    
+    if command == "commit":
+        if len(sys.argv) < 3:
+            print("Error: Commit message required")
+            print("Usage: ./dcs commit \"Your commit message\"")
+            return
+        message = sys.argv[2]
+        subprocess.run([sys.executable, "data_core.py", "git", "commit", message])
+        
+    elif command == "backup":
+        if len(sys.argv) < 3:
+            print("Error: Backup description required")  
+            print("Usage: ./dcs backup \"Backup description\"")
+            return
+        description = sys.argv[2]
+        subprocess.run([sys.executable, "data_core.py", "git", "backup", description])
+        
+    elif command == "save":
+        subprocess.run([sys.executable, "data_core.py", "save", "chat"])
+        
+    elif command == "help":
+        subprocess.run([sys.executable, "data_core.py"])
+        
+    else:
+        print(f"Unknown command: {command}")
+        print("Use './dcs help' for available commands")
+
+if __name__ == "__main__":
+    main()
