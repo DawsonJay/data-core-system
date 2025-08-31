@@ -1,409 +1,600 @@
 #!/usr/bin/env python3
 """
-Chat Health Checker - Clean and Simple
-Validates chat records and shows timeline of work accomplished.
+Chat Health Check Process - AI-FIRST HEALTH MONITORING
+Continuously monitors chat system health with comprehensive validation and reporting.
+Follows Data Core System principles: zero information loss, data immutability, proactive monitoring.
 """
 
 import os
+import sys
 from datetime import datetime, timezone, timedelta
-from typing import Dict, List
+from typing import Dict, List, Tuple, Optional
 
-class ChatHealthChecker:
-    """Simple, focused health checker for chat records."""
+def get_current_gmt_time():
+    """Get current GMT time for timestamps."""
+    return datetime.now(timezone.utc)
+
+def auto_extract_context_if_available():
+    """
+    AUTO-EXTRACT conversation context if available for enhanced validation.
+    This is optional for health checks - system can validate without it.
+    """
+    print("  Auto-extracting conversation context if available...")
     
-    def __init__(self, chats_path: str = "chats"):
-        self.chats_path = chats_path
+    try:
+        # Method 1: Check if conversation context was passed as argument
+        if len(sys.argv) > 1:
+            context = sys.argv[1]
+            print(f"    ✓ Live conversation context found ({len(context)} chars)")
+            return context
+            
+        # Method 2: Environment variable (for AI systems that can set this)
+        env_context = os.environ.get('CHAT_CONTEXT')
+        if env_context:
+            print(f"    ✓ Conversation context found in environment ({len(env_context)} chars)")
+            return env_context
+            
+        # Method 3: Attempt to read from stdin (for piped input)
+        if not sys.stdin.isatty():
+            context = sys.stdin.read().strip()
+            if context:
+                print(f"    ✓ Conversation context read from stdin ({len(context)} chars)")
+                return context
+        
+        # No context available - this is fine for health checks
+        print("    ⚠ No live conversation context available (health check will proceed without enhanced validation)")
+        return None
+        
+    except Exception as e:
+        print(f"    ⚠ Context extraction failed: {e} (proceeding without enhanced validation)")
+        return None
+
+def validate_chats_directory(chats_dir: str) -> Tuple[bool, str]:
+    """Validate chats directory exists and is accessible."""
+    print("  Validating chats directory structure...")
     
-    def check_health(self, count: int = 5, live_chat_context: str = None) -> Dict:
-        """
-        Check recent chat records and return health status.
-        Automatically validates against live chat if provided.
-        Returns: {'healthy': bool, 'timeline': list, 'issues': list}
-        """
-        result = {
-            'healthy': True,
-            'timeline': [],
-            'issues': [],
-            'summary': {},
-            'live_chat_aligned': False
-        }
-        
-        # Get chat files
-        if not os.path.exists(self.chats_path):
-            result['healthy'] = False
-            result['issues'].append(f"Chats directory not found: {self.chats_path}")
-            return result
-        
-        chat_files = [f for f in os.listdir(self.chats_path) 
-                     if f.startswith("chat-") and f.endswith(".md")]
+    if not os.path.exists(chats_dir):
+        print(f"    ✗ Chats directory not found: {chats_dir}")
+        return False, f"Chats directory not found: {chats_dir}"
+    
+    if not os.path.isdir(chats_dir):
+        print(f"    ✗ Chats path is not a directory: {chats_dir}")
+        return False, f"Chats path is not a directory: {chats_dir}"
+    
+    try:
+        # Test read access
+        os.listdir(chats_dir)
+        print(f"    ✓ Chats directory validated: {chats_dir}")
+        return True, f"Directory accessible at {chats_dir}"
+    except PermissionError:
+        print(f"    ✗ Permission denied accessing: {chats_dir}")
+        return False, f"Permission denied accessing: {chats_dir}"
+    except Exception as e:
+        print(f"    ✗ Error accessing directory: {e}")
+        return False, f"Error accessing directory: {e}"
+
+def discover_chat_files(chats_dir: str) -> Tuple[bool, List[str], str]:
+    """Discover and validate chat files in the directory."""
+    print("  Discovering chat files...")
+    
+    try:
+        all_files = os.listdir(chats_dir)
+        chat_files = [f for f in all_files if f.startswith("chat-") and f.endswith(".md")]
         
         if not chat_files:
-            result['issues'].append("No chat files found")
-            return result
+            print("    ✗ No chat files found matching pattern chat-*.md")
+            return False, [], "No chat files found"
         
-        # Get recent files
+        # Sort chronologically (newest first for health check focus)
         chat_files.sort(reverse=True)
-        recent_files = chat_files[:count]
+        print(f"    ✓ Discovered {len(chat_files)} chat files")
         
-        # Analyze each file
-        timeline = []
-        for filename in recent_files:
-            file_data = self._analyze_file(filename)
-            if file_data:
-                timeline.append(file_data)
-                # Check for issues
-                if not file_data['valid']:
-                    result['healthy'] = False
-                    result['issues'].extend(file_data['issues'])
+        return True, chat_files, f"Found {len(chat_files)} chat files"
         
-        # Sort chronologically
-        timeline.sort(key=lambda x: x['timestamp'])
-        result['timeline'] = timeline
-        
-        # Check for gaps
-        gap_issues = self._check_gaps(timeline)
-        result['issues'].extend(gap_issues)
-        if gap_issues:
-            result['healthy'] = False
-        
-        # Validate against live chat if provided
-        if live_chat_context and timeline:
-            alignment_result = self._validate_live_chat_alignment(timeline, live_chat_context)
-            result['live_chat_aligned'] = alignment_result['aligned']
-            if not alignment_result['aligned']:
-                result['issues'].extend(alignment_result['issues'])
-                result['healthy'] = False
-        
-        # Create summary
-        if timeline:
-            result['summary'] = {
-                'files_checked': len(timeline),
-                'time_span': f"{timeline[0]['timestamp'].strftime('%H:%M')} - {timeline[-1]['timestamp'].strftime('%H:%M')}",
-                'total_duration': self._calculate_duration(timeline[0]['timestamp'], timeline[-1]['timestamp'])
-            }
-        
-        return result
+    except Exception as e:
+        print(f"    ✗ Error discovering files: {e}")
+        return False, [], f"Discovery error: {e}"
+
+def analyze_chat_file(filepath: str, filename: str) -> Dict:
+    """Analyze a single chat file with comprehensive validation."""
+    print(f"    Analyzing {filename}...")
     
-    def _analyze_file(self, filename: str) -> Dict:
-        """Analyze a single chat file."""
-        try:
-            filepath = os.path.join(self.chats_path, filename)
-            with open(filepath, 'r') as f:
-                content = f.read()
-            
-            # Parse timestamp from filename
-            timestamp = self._parse_timestamp(filename)
-            if not timestamp:
-                return {'valid': False, 'issues': [f"{filename}: Invalid timestamp format"]}
-            
-            # Extract key information
-            summary = self._extract_summary(content)
-            decisions = self._extract_decisions(content)
-            actions = self._extract_actions(content)
-            
-            # Basic validation
-            issues = []
-            if len(content) < 1000:
-                issues.append(f"{filename}: File too small ({len(content)} chars)")
-            
-            if "framework_version: 1.1" not in content:
-                issues.append(f"{filename}: Missing Framework v1.1")
-            
-            return {
-                'filename': filename,
-                'timestamp': timestamp,
-                'summary': summary,
-                'decisions': decisions,
-                'actions': actions,
-                'valid': len(issues) == 0,
-                'issues': issues
-            }
-            
-        except Exception as e:
-            return {'valid': False, 'issues': [f"{filename}: Error reading file - {e}"]}
+    analysis = {
+        'filename': filename,
+        'valid': True,
+        'issues': [],
+        'timestamp': None,
+        'summary': '',
+        'size': 0,
+        'framework_compliant': False,
+        'sections_found': 0
+    }
     
-    def _parse_timestamp(self, filename: str) -> datetime:
-        """Parse timestamp from filename like chat-2025-08-31-14-40.md"""
-        try:
-            parts = filename.replace(".md", "").split("-")
-            if len(parts) >= 5:
-                year, month, day, hour, minute = parts[1:6]
-                return datetime(int(year), int(month), int(day), int(hour), int(minute), tzinfo=timezone.utc)
-        except:
-            pass
-        return None
+    try:
+        with open(filepath, 'r') as f:
+            content = f.read()
+        
+        analysis['size'] = len(content)
+        
+        # Parse timestamp from filename
+        timestamp = parse_temporal_filename(filename)
+        if timestamp:
+            analysis['timestamp'] = timestamp
+            print(f"      ✓ Timestamp parsed: {timestamp.strftime('%Y-%m-%d %H:%M')} GMT")
+        else:
+            analysis['issues'].append("Invalid timestamp format in filename")
+            analysis['valid'] = False
+            print(f"      ✗ Invalid timestamp format")
+        
+        # Check file size
+        if len(content) < 1000:
+            analysis['issues'].append(f"File too small ({len(content)} chars) - minimum 1000 expected")
+            analysis['valid'] = False
+            print(f"      ✗ File too small: {len(content)} characters")
+        else:
+            print(f"      ✓ File size adequate: {len(content)} characters")
+        
+        # Check Framework v1.1 compliance
+        if "framework_version: 1.1" in content:
+            analysis['framework_compliant'] = True
+            print("      ✓ Framework v1.1 compliant")
+        else:
+            analysis['issues'].append("Missing Framework v1.1 compliance")
+            analysis['valid'] = False
+            print("      ✗ Not Framework v1.1 compliant")
+        
+        # Count required sections
+        required_sections = [
+            "## Summary", "## Key Insights", "## Decisions Made", "## Questions Answered",
+            "## Action Items", "## Context", "## Personal Reflections", "## System State",
+            "## Implementation Details", "## Current Status", "## Additional Notes", "## Technical Specifications"
+        ]
+        
+        sections_found = sum(1 for section in required_sections if section in content)
+        analysis['sections_found'] = sections_found
+        
+        if sections_found >= 12:  # All sections present
+            print(f"      ✓ All required sections present ({sections_found}/12)")
+        else:
+            missing_count = 12 - sections_found
+            analysis['issues'].append(f"Missing {missing_count} required Framework v1.1 sections")
+            analysis['valid'] = False
+            print(f"      ✗ Missing sections: {sections_found}/12 found")
+        
+        # Extract summary for timeline
+        analysis['summary'] = extract_summary_from_content(content)
+        
+        if analysis['valid']:
+            print(f"      ✓ Analysis complete - file validated")
+        else:
+            print(f"      ✗ Analysis complete - {len(analysis['issues'])} issues found")
+            
+    except Exception as e:
+        analysis['valid'] = False
+        analysis['issues'].append(f"Error reading file: {e}")
+        print(f"      ✗ Error analyzing file: {e}")
     
-    def _extract_summary(self, content: str) -> str:
-        """Extract summary from content."""
+    return analysis
+
+def parse_temporal_filename(filename: str) -> Optional[datetime]:
+    """Parse timestamp from filename format: chat-YYYY-MM-DD-HH-MM.md"""
+    try:
+        # Remove .md extension and split on hyphens
+        parts = filename.replace('.md', '').split('-')
+        if len(parts) >= 5 and parts[0] == 'chat':
+            year, month, day, hour, minute = parts[1:6]
+            return datetime(int(year), int(month), int(day), int(hour), int(minute), tzinfo=timezone.utc)
+    except (ValueError, IndexError):
+        pass
+    return None
+
+def extract_summary_from_content(content: str) -> str:
+    """Extract comprehensive summary from file content for timeline verification."""
+    try:
+        # Try to extract the Summary section first (most reliable)
         if '## Summary' in content:
             start = content.find('## Summary') + len('## Summary')
             end = content.find('##', start)
             if end == -1:
-                end = start + 200
+                end = start + 300  # Allow more content for better verification
             summary = content[start:end].strip()
-            return summary[:150] + "..." if len(summary) > 150 else summary
-        return "No summary found"
-    
-    def _extract_decisions(self, content: str) -> str:
-        """Extract key decisions from content."""
-        if '## Decisions Made' in content:
-            start = content.find('## Decisions Made') + len('## Decisions Made')
-            end = content.find('##', start)
-            if end == -1:
-                end = start + 200
-            decisions = content[start:end].strip()
-            return decisions[:100] + "..." if len(decisions) > 100 else decisions
-        return ""
-    
-    def _extract_actions(self, content: str) -> str:
-        """Extract action items from content."""
-        if '## Action Items' in content:
-            start = content.find('## Action Items') + len('## Action Items')
-            end = content.find('##', start)
-            if end == -1:
-                end = start + 200
-            actions = content[start:end].strip()
-            return actions[:100] + "..." if len(actions) > 100 else actions
-        return ""
-    
-    def _check_gaps(self, timeline: List[Dict]) -> List[str]:
-        """Check for gaps in timeline."""
-        issues = []
-        for i in range(len(timeline) - 1):
-            current = timeline[i]
-            next_record = timeline[i + 1]
             
-            time_diff = next_record['timestamp'] - current['timestamp']
+            # Clean up the summary content
+            summary = ' '.join(summary.split())  # Normalize whitespace
             
-            # Check for overlaps
-            if time_diff.total_seconds() < 0:
-                issues.append(f"Timeline overlap: {current['filename']} after {next_record['filename']}")
-            
-            # Check for large gaps (>4 hours)
-            elif time_diff.total_seconds() > 14400:
-                hours = time_diff.total_seconds() / 3600
-                issues.append(f"Large gap: {hours:.1f} hours between {current['filename']} and {next_record['filename']}")
+            if len(summary) > 20:  # If we got meaningful content
+                return summary
         
-        return issues
+        # Fallback: Try to extract from Key Insights if Summary is empty
+        if '## Key Insights' in content:
+            start = content.find('## Key Insights') + len('## Key Insights')
+            end = content.find('##', start)
+            if end == -1:
+                end = start + 300
+            insights = content[start:end].strip()
+            insights = ' '.join(insights.split())
+            
+            if len(insights) > 20:
+                return f"Key Insights: {insights}"
+        
+        # Final fallback: Try to extract from the beginning of content after metadata
+        lines = content.split('\n')
+        content_started = False
+        extracted_lines = []
+        
+        for line in lines:
+            line = line.strip()
+            if line.startswith('#') and not line.startswith('##'):  # Found main title
+                content_started = True
+                continue
+            elif content_started and line and not line.startswith('#'):
+                extracted_lines.append(line)
+                if len(' '.join(extracted_lines)) > 200:
+                    break
+        
+        if extracted_lines:
+            fallback_summary = ' '.join(extracted_lines)
+            return f"Content: {fallback_summary}"
+            
+    except Exception as e:
+        return f"Summary extraction error: {str(e)[:50]}"
     
-    def _calculate_duration(self, start: datetime, end: datetime) -> str:
-        """Calculate duration between timestamps."""
-        diff = end - start
+    return "No meaningful summary content found"
+
+def validate_timeline_continuity(analyses: List[Dict]) -> Tuple[bool, List[str]]:
+    """Validate timeline continuity and detect gaps."""
+    print("  Validating timeline continuity...")
+    
+    if not analyses:
+        print("    ⚠ No files to validate")
+        return True, []
+    
+    # Sort chronologically
+    valid_analyses = [a for a in analyses if a['timestamp']]
+    valid_analyses.sort(key=lambda x: x['timestamp'])
+    
+    issues = []
+    
+    # Check for gaps between consecutive files
+    for i in range(len(valid_analyses) - 1):
+        current = valid_analyses[i]
+        next_file = valid_analyses[i + 1]
+        
+        time_diff = next_file['timestamp'] - current['timestamp']
+        
+        # Check for overlaps (impossible timestamps)
+        if time_diff.total_seconds() < 0:
+            issues.append(f"Timeline overlap: {current['filename']} after {next_file['filename']}")
+            print(f"    ✗ Timeline overlap detected")
+        
+        # Check for large gaps (>6 hours suggests missing sessions)
+        elif time_diff.total_seconds() > 21600:  # 6 hours
+            hours = time_diff.total_seconds() / 3600
+            issues.append(f"Large gap: {hours:.1f} hours between {current['filename']} and {next_file['filename']}")
+            print(f"    ⚠ Large gap detected: {hours:.1f} hours")
+    
+    if not issues:
+        print("    ✓ Timeline continuity validated - no significant gaps")
+    
+    return len(issues) == 0, issues
+
+def validate_against_live_context(analyses: List[Dict], live_context: str) -> Tuple[bool, List[str]]:
+    """Validate recent analyses against live conversation context."""
+    print("  Validating against live conversation context...")
+    
+    if not live_context:
+        print("    ⚠ No live context provided - skipping enhanced validation")
+        return True, []
+    
+    if not analyses:
+        print("    ⚠ No chat files to validate against")
+        return True, []
+    
+    issues = []
+    
+    # Check if this might be a continuing session
+    recent_files = analyses[:2] if len(analyses) > 1 else analyses  # Check first 2 files (most recent)
+    current_time = get_current_gmt_time()
+    
+    # Check temporal alignment
+    if recent_files:
+        latest_timestamp = max(a['timestamp'] for a in recent_files if a['timestamp'])
+        time_since_latest = current_time - latest_timestamp
+        
+        # If latest file is very recent (< 2 hours), expect some content alignment
+        if time_since_latest.total_seconds() < 7200:  # 2 hours
+            # Display time difference in user-friendly format
+            minutes_ago = time_since_latest.total_seconds() / 60
+            if minutes_ago < 60:
+                time_display = f"{minutes_ago:.0f} minutes ago"
+            else:
+                hours_ago = time_since_latest.total_seconds() / 3600
+                time_display = f"{hours_ago:.1f}h ago"
+            print(f"    ⚠ Recent session detected ({time_display})")
+            
+            # Look for any content overlap (soft validation)
+            live_lower = live_context.lower()
+            content_found = False
+            
+            for analysis in recent_files:
+                if analysis['summary']:
+                    summary_words = [w for w in analysis['summary'].lower().split() if len(w) > 5]
+                    for word in summary_words[:5]:  # Check first few meaningful words
+                        if word in live_lower:
+                            content_found = True
+                            break
+                if content_found:
+                    break
+            
+            if not content_found:
+                issues.append("Recent chat files don't appear to reflect current conversation context")
+                print("    ⚠ Limited content alignment with recent files")
+            else:
+                print("    ✓ Content alignment detected with recent files")
+        else:
+            print(f"    ✓ No recent session detected - no context alignment expected")
+    
+    return len(issues) == 0, issues
+
+def generate_comprehensive_report(analyses: List[Dict], timeline_issues: List[str], context_issues: List[str]) -> Dict:
+    """Generate comprehensive health report."""
+    print("  Generating comprehensive health report...")
+    
+    if not analyses:
+        return {
+            'healthy': False,
+            'total_files': 0,
+            'valid_files': 0,
+            'issues': ['No chat files found for analysis'],
+            'timeline': [],
+            'summary': 'No data available'
+        }
+    
+    # Calculate statistics
+    valid_files = [a for a in analyses if a['valid']]
+    invalid_files = [a for a in analyses if not a['valid']]
+    
+    # Generate timeline (most recent files first)
+    timeline = []
+    for analysis in analyses[:5]:  # Show 5 most recent
+        if analysis['timestamp']:
+            timeline.append({
+                'timestamp': analysis['timestamp'],
+                'filename': analysis['filename'],
+                'summary': analysis['summary'],
+                'valid': analysis['valid'],
+                'size': analysis['size']
+            })
+    
+    # Collect all issues
+    all_issues = []
+    for analysis in invalid_files:
+        for issue in analysis['issues']:
+            all_issues.append(f"{analysis['filename']}: {issue}")
+    
+    all_issues.extend(timeline_issues)
+    all_issues.extend(context_issues)
+    
+    # Calculate time span (display in local time for user readability)
+    timestamps = [a['timestamp'] for a in analyses if a['timestamp']]
+    time_span = "Unknown"
+    duration = "Unknown"
+    
+    if timestamps:
+        timestamps.sort()
+        earliest = timestamps[0]
+        latest = timestamps[-1]
+        
+        # Convert to local time for display
+        earliest_local = earliest.replace(tzinfo=timezone.utc).astimezone()
+        latest_local = latest.replace(tzinfo=timezone.utc).astimezone()
+        time_span = f"{earliest_local.strftime('%H:%M')} - {latest_local.strftime('%H:%M')} (local)"
+        
+        diff = latest - earliest
         if diff.total_seconds() < 3600:
-            return f"{int(diff.total_seconds() / 60)} minutes"
+            duration = f"{int(diff.total_seconds() / 60)} minutes"
         else:
             hours = int(diff.total_seconds() / 3600)
             minutes = int((diff.total_seconds() % 3600) / 60)
-            return f"{hours}h {minutes}m"
+            duration = f"{hours}h {minutes}m"
     
-    def _validate_live_chat_alignment(self, timeline: List[Dict], live_chat_context: str) -> Dict:
-        """
-        Validate that saved records align with live chat context.
-        Focuses on temporal consistency and topic continuity, not exact content match.
-        """
-        result = {'aligned': True, 'issues': []}
-        
-        if not timeline:
-            return result
-        
-        # Check temporal consistency first - most important validation
-        temporal_alignment = self._check_temporal_alignment(timeline, live_chat_context)
-        if not temporal_alignment['valid']:
-            result['aligned'] = False
-            result['issues'].extend(temporal_alignment['issues'])
-            return result  # If temporal alignment fails, don't check content
-        
-        # For content alignment, focus on the most recent records (trailing end)
-        # This handles scenarios where live chat has evolved beyond saved records
-        recent_records = timeline[-2:] if len(timeline) > 1 else timeline
-        
-        # Check if this might be a new chat session
-        if self._detect_new_chat_session(timeline, live_chat_context):
-            # In a new chat, we only validate that the timeline is internally consistent
-            # We don't expect content alignment with current live chat
-            return result
-        
-        # For continuing sessions, check topic continuity
-        topic_alignment = self._check_topic_continuity(recent_records, live_chat_context)
-        if not topic_alignment['valid']:
-            result['aligned'] = False
-            result['issues'].extend(topic_alignment['issues'])
-        
-        return result
+    # Determine overall health
+    healthy = (len(valid_files) == len(analyses) and 
+              len(timeline_issues) == 0 and 
+              len(context_issues) == 0)
     
-    def _check_temporal_alignment(self, timeline: List[Dict], live_chat_context: str) -> Dict:
-        """Check if timeline timestamps make sense with live chat context."""
-        result = {'valid': True, 'issues': []}
-        
-        if not timeline:
-            return result
-        
-        # Get the most recent saved timestamp
-        latest_timestamp = timeline[-1]['timestamp']
-        current_time = datetime.now(timezone.utc)
-        
-        # Check if the latest record is from the future (impossible)
-        if latest_timestamp > current_time:
-            result['valid'] = False
-            result['issues'].append(f"Latest record timestamp is in the future: {latest_timestamp}")
-            return result
-        
-        # Check if the latest record is too old (>4 hours) for current session
-        time_diff = current_time - latest_timestamp
-        if time_diff.total_seconds() > 14400:  # 4 hours
-            # This might be a new session - check if live chat mentions recent times
-            recent_time_patterns = [
-                current_time.strftime('%H:%M'),
-                (current_time - timedelta(minutes=30)).strftime('%H:%M'),
-                (current_time - timedelta(hours=1)).strftime('%H:%M')
-            ]
-            
-            if any(pattern in live_chat_context for pattern in recent_time_patterns):
-                result['issues'].append(f"Large time gap: {time_diff.total_seconds()/3600:.1f} hours since last save")
-        
-        return result
+    report = {
+        'healthy': healthy,
+        'total_files': len(analyses),
+        'valid_files': len(valid_files),
+        'invalid_files': len(invalid_files),
+        'framework_compliant': sum(1 for a in analyses if a.get('framework_compliant', False)),
+        'issues': all_issues,
+        'timeline': timeline,
+        'summary': {
+            'files_checked': len(analyses),
+            'time_span': time_span,
+            'total_duration': duration,
+            'health_status': 'HEALTHY' if healthy else 'ISSUES DETECTED'
+        }
+    }
     
-    def _detect_new_chat_session(self, timeline: List[Dict], live_chat_context: str) -> bool:
-        """Detect if this is a new chat session with different topics."""
-        if not timeline:
-            return False
-        
-        # Check if live chat contains session indicators
-        new_session_indicators = [
-            'new chat', 'different topic', 'switching to', 'new conversation',
-            'starting fresh', 'new session', 'different project'
-        ]
-        
-        live_chat_lower = live_chat_context.lower()
-        return any(indicator in live_chat_lower for indicator in new_session_indicators)
+    print(f"    ✓ Health report generated - {len(analyses)} files analyzed")
+    return report
+
+def display_health_results(report: Dict) -> None:
+    """Display comprehensive health check results."""
+    print("  Displaying comprehensive health results...")
     
-    def _check_topic_continuity(self, recent_records: List[Dict], live_chat_context: str) -> Dict:
-        """
-        Check if recent records appear in live chat (directional validation).
-        Live chat can contain older events not in timeline - that's fine.
-        We only validate that timeline events are reflected in live chat.
-        """
-        result = {'valid': True, 'issues': []}
-        
-        if not recent_records:
-            return result
-        
-        live_chat_lower = live_chat_context.lower()
-        
-        # Check each recent record to see if its content appears in live chat
-        for record in recent_records:
-            record_alignment = self._check_single_record_alignment(record, live_chat_lower)
-            
-            if not record_alignment['found']:
-                # This is a soft validation - log but don't fail
-                result['issues'].append(
-                    f"Timeline record {record['timestamp'].strftime('%H:%M')} topics not clearly reflected in live chat"
-                )
-        
-        # Only fail if NO recent records are reflected in live chat
-        # This indicates a complete disconnect
-        aligned_count = sum(1 for record in recent_records 
-                          if self._check_single_record_alignment(record, live_chat_lower)['found'])
-        
-        if aligned_count == 0 and len(recent_records) > 0:
-            result['valid'] = False
-            result['issues'].append("Complete topic disconnect: no timeline records reflected in live chat")
-        
-        return result
+    # Summary Statistics
+    print(f"\n    📊 HEALTH SUMMARY:")
+    print(f"       Files analyzed: {report['total_files']}")
+    print(f"       Valid files: {report['valid_files']}")
+    if report['invalid_files'] > 0:
+        print(f"       Invalid files: {report['invalid_files']}")
+    print(f"       Framework v1.1 compliant: {report['framework_compliant']}")
     
-    def _check_single_record_alignment(self, record: Dict, live_chat_lower: str) -> Dict:
-        """Check if a single record's content appears in live chat."""
-        result = {'found': False, 'matched_elements': []}
-        
-        # Extract key phrases from the record (more specific than broad topics)
-        record_content = f"{record['summary']} {record['decisions']} {record['actions']}".lower()
-        
-        # Look for specific meaningful phrases (5+ chars, not common words)
-        words = record_content.split()
-        meaningful_phrases = []
-        
-        # Single meaningful words
-        for word in words:
-            if (len(word) > 6 and 
-                word not in ['system', 'create', 'update', 'framework', 'structure', 
-                           'implementation', 'development', 'session', 'comprehensive']):
-                meaningful_phrases.append(word)
-        
-        # Two-word phrases
-        for i in range(len(words) - 1):
-            phrase = f"{words[i]} {words[i+1]}"
-            if (len(phrase) > 10 and 
-                not any(common in phrase for common in ['system', 'create', 'update'])):
-                meaningful_phrases.append(phrase)
-        
-        # Check if any meaningful phrases appear in live chat
-        matched = []
-        for phrase in meaningful_phrases:
-            if phrase in live_chat_lower:
-                matched.append(phrase)
-        
-        # Consider it found if we match at least 1 meaningful phrase
-        # Or if we find the timestamp (indicating the session is current)
-        timestamp_str = record['timestamp'].strftime('%H:%M')
-        timestamp_found = timestamp_str in live_chat_lower
-        
-        if matched or timestamp_found:
-            result['found'] = True
-            result['matched_elements'] = matched
-            if timestamp_found:
-                result['matched_elements'].append(f"timestamp_{timestamp_str}")
-        
-        return result
+    if report['summary']:
+        print(f"       Time span: {report['summary']['time_span']}")
+        print(f"       Total duration: {report['summary']['total_duration']}")
+        print(f"       Status: {report['summary']['health_status']}")
     
-    def display_results(self, result: Dict) -> None:
-        """Display health check results in clean format."""
-        print("\n🔍 Chat Health Check")
-        print("=" * 50)
+    # Detailed Recent Timeline for User Verification
+    if report['timeline']:
+        print(f"\n    📅 DETAILED TIMELINE - LAST 5 RECORDS:")
+        print(f"       (Showing detailed content for manual verification)")
+        print()
         
-        if not result['timeline']:
-            print("❌ No chat files found to check")
-            return
-        
-        # Show summary
-        if result['summary']:
-            print(f"\n📊 Summary:")
-            print(f"   Files checked: {result['summary']['files_checked']}")
-            print(f"   Time span: {result['summary']['time_span']}")
-            print(f"   Duration: {result['summary']['total_duration']}")
-        
-        # Show timeline
-        print(f"\n📅 Timeline of Work:")
-        for item in result['timeline']:
+        for i, item in enumerate(report['timeline'], 1):
             status = "✅" if item['valid'] else "❌"
-            print(f"\n   {status} {item['timestamp'].strftime('%H:%M')} - {item['summary']}")
             
-            if item['decisions']:
-                print(f"      💡 {item['decisions']}")
+            # Display timestamp in local time for user readability
+            # (while keeping all stored data in GMT)
+            gmt_timestamp = item['timestamp']
+            local_timestamp = gmt_timestamp.replace(tzinfo=timezone.utc).astimezone()
+            timestamp_display = f"{local_timestamp.strftime('%H:%M')} (GMT: {gmt_timestamp.strftime('%H:%M')})"
+            size = f"{item['size']} chars"
             
-            if item['actions']:
-                print(f"      ✅ {item['actions']}")
-        
-        # Show issues
-        if result['issues']:
-            print(f"\n⚠️  Issues Found:")
-            for issue in result['issues']:
-                print(f"   - {issue}")
-        
-        # Show live chat alignment if checked
-        if 'live_chat_aligned' in result:
-            alignment_status = "✅ ALIGNED" if result['live_chat_aligned'] else "⚠ MISALIGNED"
-            print(f"\n🔗 Live Chat: {alignment_status}")
-        
-        # Overall status
-        print(f"\n🎯 Status: {'✅ HEALTHY' if result['healthy'] else '❌ ISSUES FOUND'}")
-        
-        if result['healthy']:
-            print("   All records are valid and timeline is continuous.")
-        else:
-            print("   Some issues need attention.")
+            # Show more detailed summary (up to 200 chars for better context)
+            summary = item['summary']
+            if len(summary) > 200:
+                summary = summary[:200] + '...'
+            
+            print(f"       {i}. {status} {timestamp_display} ({size})")
+            print(f"          {summary}")
+            print()
+    
+    # Issues Found
+    if report['issues']:
+        print(f"    ⚠️  ISSUES DETECTED:")
+        for issue in report['issues']:
+            print(f"       - {issue}")
+        print()
+    
+    print("    ✓ Detailed health results displayed for manual verification")
+
+def main():
+    """Main AI-first health check process."""
+    print("=" * 70)
+    print("CHAT HEALTH CHECK PROCESS - AI-FIRST SYSTEM MONITORING")
+    print("=" * 70)
+    print("Comprehensive chat system health monitoring with proactive issue detection.")
+    print("Zero manual intervention required - designed for AI systems.")
+    
+    # Step 1: Environment validation
+    print("\n" + "=" * 70)
+    print("STEP 1: ENVIRONMENT VALIDATION")
+    print("=" * 70)
+    
+    chats_dir = "chats"
+    dir_valid, dir_message = validate_chats_directory(chats_dir)
+    if not dir_valid:
+        print("✗ CRITICAL: Environment validation failed")
+        print(f"  Issue: {dir_message}")
+        print("  Health check cannot proceed without accessible chats directory")
+        sys.exit(1)
+    print("✓ Environment validation complete")
+    
+    # Step 2: Context extraction (optional for health checks)
+    print("\n" + "=" * 70)
+    print("STEP 2: AUTO-EXTRACT CONVERSATION CONTEXT (OPTIONAL)")
+    print("=" * 70)
+    
+    live_context = auto_extract_context_if_available()
+    print("✓ Context extraction complete")
+    
+    # Step 3: File discovery
+    print("\n" + "=" * 70)
+    print("STEP 3: CHAT FILE DISCOVERY")
+    print("=" * 70)
+    
+    files_found, chat_files, discovery_message = discover_chat_files(chats_dir)
+    if not files_found:
+        print("✗ CRITICAL: No chat files found for health monitoring")
+        print(f"  Issue: {discovery_message}")
+        print("  System cannot monitor health without chat files")
+        sys.exit(1)
+    print(f"✓ File discovery complete: {discovery_message}")
+    
+    # Step 4: File analysis
+    print("\n" + "=" * 70)
+    print("STEP 4: COMPREHENSIVE FILE ANALYSIS")
+    print("=" * 70)
+    
+    analyses = []
+    for filename in chat_files[:10]:  # Analyze 10 most recent files
+        filepath = os.path.join(chats_dir, filename)
+        analysis = analyze_chat_file(filepath, filename)
+        analyses.append(analysis)
+    
+    print(f"✓ File analysis complete - {len(analyses)} files analyzed")
+    
+    # Step 5: Timeline validation
+    print("\n" + "=" * 70)
+    print("STEP 5: TIMELINE CONTINUITY VALIDATION")
+    print("=" * 70)
+    
+    timeline_valid, timeline_issues = validate_timeline_continuity(analyses)
+    if timeline_valid:
+        print("✓ Timeline continuity validated")
+    else:
+        print(f"⚠ Timeline issues detected: {len(timeline_issues)} issues")
+    
+    # Step 6: Live context validation (if available)
+    print("\n" + "=" * 70)
+    print("STEP 6: LIVE CONTEXT VALIDATION")
+    print("=" * 70)
+    
+    context_valid, context_issues = validate_against_live_context(analyses, live_context)
+    if context_valid:
+        print("✓ Live context validation complete")
+    else:
+        print(f"⚠ Context alignment issues detected: {len(context_issues)} issues")
+    
+    # Step 7: Generate comprehensive report
+    print("\n" + "=" * 70)
+    print("STEP 7: COMPREHENSIVE REPORT GENERATION")
+    print("=" * 70)
+    
+    health_report = generate_comprehensive_report(analyses, timeline_issues, context_issues)
+    print("✓ Health report generation complete")
+    
+    # Step 8: Display results
+    print("\n" + "=" * 70)
+    print("STEP 8: HEALTH RESULTS DISPLAY")
+    print("=" * 70)
+    
+    display_health_results(health_report)
+    print("✓ Health results display complete")
+    
+    # Final health status report
+    print("\n" + "=" * 70)
+    if health_report['healthy']:
+        print("SUCCESS: CHAT SYSTEM HEALTH CHECK PASSED")
+        print("=" * 70)
+        print("✓ All chat files validated successfully")
+        print("✓ Timeline continuity confirmed")
+        print("✓ Framework v1.1 compliance verified")
+        print("✓ Zero critical issues detected")
+        print("✓ System ready for continued operation")
+        exit_code = 0
+    else:
+        print("WARNING: CHAT SYSTEM HEALTH ISSUES DETECTED")
+        print("=" * 70)
+        print(f"⚠ {len(health_report['issues'])} issues require attention")
+        print(f"⚠ {health_report['invalid_files']} invalid files detected")
+        print("⚠ System operational but monitoring required")
+        print("⚠ Review issues above for data integrity")
+        exit_code = 1
+    
+    # Show completion time in both local and GMT for clarity
+    gmt_time = get_current_gmt_time()
+    local_time = gmt_time.replace(tzinfo=timezone.utc).astimezone()
+    print(f"✓ Health check completed at {local_time.strftime('%Y-%m-%d %H:%M:%S')} (local) / {gmt_time.strftime('%H:%M:%S')} GMT")
+    print("✓ AI-first design - no manual intervention required")
+    
+    return exit_code == 0
 
 if __name__ == "__main__":
-    """Run standalone health check."""
-    checker = ChatHealthChecker()
-    result = checker.check_health()
-    checker.display_results(result)
+    success = main()
+    sys.exit(0 if success else 1)

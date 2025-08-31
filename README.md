@@ -31,7 +31,7 @@ This system exists to perfectly preserve and protect irreplaceable development d
 
 ## System Structure
 - `chats/` - Chat reports using Chat Report Framework
-- `processes/` - Process scripts that enforce rules and frameworks
+- `processes/` - Process scripts that enforce rules and frameworks (see `processes/README.md` for AI process creation requirements)
 - **Planned data folders:**
   - `projects/` - Technical project reports and work records
   - `interviews/` - Interview records and feedback
@@ -42,7 +42,7 @@ This system exists to perfectly preserve and protect irreplaceable development d
   - `research/` - Technical research and industry analysis
 - Additional folders will be added as needed
 
-**IMPORTANT: Before working with any folder or its contents, you MUST read that folder's README.md to understand the specific rules and standards for that data type.**
+**IMPORTANT: Before working with any folder or its contents, you MUST read that folder's README.md to understand the specific rules and standards for that data type. Before creating or modifying any process, you MUST read `processes/README.md` to understand AI-first design requirements and rule enforcement philosophy.**
 
 ## How to Use the System
 
@@ -114,7 +114,8 @@ This system exists to perfectly preserve and protect irreplaceable development d
 - **Framework Compliance:** Processes validate data against established frameworks
 - **Error Prevention:** Automated validation prevents rule violations and data corruption
 - **Unified Interface:** Master script (`data_core.py`) coordinates all operations
-- **Process Standards:** See `processes/README.md` for detailed rules and patterns
+- **AI-First Design:** All processes built for autonomous AI operation without interactive prompts
+- **Process Standards:** See `processes/README.md` for detailed AI design requirements and patterns
 
 ## Data Protection & Health Monitoring
 - **Irreplaceable Data:** All stored information is irreplaceable and requires maximum protection
@@ -147,6 +148,12 @@ This system exists to perfectly preserve and protect irreplaceable development d
 - **Time Verification:** Always verify correct time before recording
 - **No Regional Time:** Avoid local time zones that can change with VPNs
 - **Consistent Format:** Use ISO 8601 format for all timestamps
+
+### User Interface Time Display
+- **Dual-Time Display:** All user-facing time displays should show local time with GMT reference
+- **Format Standards:** Use "20:09 (GMT: 19:09)" or "20:35:57 (local) / 19:35:57 GMT" formats
+- **Data vs Display:** Store in GMT, display in local time for better user experience
+- **Consistency:** All processes must follow dual-time display standards for user feedback
 
 ## Documentation Principles
 - **No duplication between READMEs** - information exists in exactly one place

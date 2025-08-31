@@ -9,26 +9,61 @@ import os
 import subprocess
 
 def save_chat():
-    """Save a chat report using the chat process."""
+    """Save a chat report using AI-first chat process with auto-extraction."""
     print("=" * 60)
-    print("DATA CORE - CHAT SAVE PROCESS")
+    print("DATA CORE - AI-FIRST CHAT SAVE PROCESS")
     print("=" * 60)
-    print("This will create a new chat report with ACTUAL CONTENT capture.")
-    print("The script will guide you through entering content for each section.")
-    print("All content will be validated and integrity-checked before saving.")
-    print("\nStarting chat save process...")
+    print("Auto-extracts live conversation and creates Framework v1.1 reports.")
+    print("Zero manual intervention required - designed for AI systems.")
+    print("\nStarting AI-first chat save process...")
     
-    # Call the chat save process
+    # Get live conversation context (this will be provided by AI)
+    if len(sys.argv) < 3:
+        print("Error: This process requires live conversation context")
+        print("Usage: python data_core.py save chat \"live conversation context\"")
+        return
+    
+    live_context = sys.argv[3]  # argv[1]="save", argv[2]="chat", argv[3]=context
+    
+    # Call the AI-first chat save process
     script_path = os.path.join("processes", "chats", "save_chat.py")
     if os.path.exists(script_path):
         try:
-            result = subprocess.run([sys.executable, script_path], 
-                                 capture_output=True, text=True, check=True)
-            print(result.stdout)
+            result = subprocess.run([sys.executable, script_path, live_context], 
+                                 check=True)
         except subprocess.CalledProcessError as e:
-            print(f"Error: {e.stderr}")
+            print(f"Error: Chat save process failed: {e}")
     else:
         print(f"Error: Chat save script not found at {script_path}")
+
+def health_check():
+    """Run comprehensive health check using AI-first health monitoring process."""
+    print("=" * 60)
+    print("DATA CORE - AI-FIRST HEALTH CHECK PROCESS")
+    print("=" * 60)
+    print("Comprehensive chat system health monitoring with proactive issue detection.")
+    print("Zero manual intervention required - designed for AI systems.")
+    print("\nStarting AI-first health check process...")
+    
+    # Get live conversation context if available (optional for health checks)
+    live_context = None
+    if len(sys.argv) >= 3:
+        live_context = sys.argv[2]
+    
+    # Call the AI-first health check process
+    script_path = os.path.join("processes", "chats", "chat_health_check.py")
+    if os.path.exists(script_path):
+        try:
+            if live_context:
+                result = subprocess.run([sys.executable, script_path, live_context], 
+                                     check=True)
+            else:
+                result = subprocess.run([sys.executable, script_path], 
+                                     check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Error: Health check process failed: {e}")
+    else:
+        print(f"Error: Health check script not found at {script_path}")
 
 def git_commit():
     """Commit changes with data protection using the Git commit process."""
@@ -59,11 +94,13 @@ def git_commit():
         print(f"Error: Git commit script not found at {script_path}")
 
 def main():
-    if len(sys.argv) > 2:
-        if sys.argv[1] == "save" and sys.argv[2] == "chat":
+    if len(sys.argv) > 1:
+        if len(sys.argv) > 2 and sys.argv[1] == "save" and sys.argv[2] == "chat":
             save_chat()
         elif sys.argv[1] == "commit":
             git_commit()
+        elif sys.argv[1] == "health":
+            health_check()
         else:
             print("Unknown command")
     else:
@@ -72,19 +109,32 @@ def main():
         print("Available commands:")
         print()
         print("📝 DATA OPERATIONS:")
-        print("  python data_core.py save chat               - Create new chat report")
+        print("  python data_core.py save chat \"context\"     - AI-first chat capture with auto-extraction")
+        print()
+        print("🔍 HEALTH MONITORING:")
+        print("  python data_core.py health [\"context\"]      - Comprehensive system health check")
         print()
         print("🔐 GIT OPERATIONS:")
         print("  python data_core.py commit \"live context\"   - Backup + commit with data protection")
         print()
         print("📊 PROCESS DETAILS:")
         print()
-        print("Chat Save Process:")
-        print("  ✓ Capture actual conversation content (not empty templates)")
-        print("  ✓ Validate all required sections are filled")
-        print("  ✓ Ensure content integrity and completeness")
-        print("  ✓ Follow the Chat Report Framework")
-        print("  ✓ Check for gaps with previous reports")
+        print("AI-First Chat Save Process:")
+        print("  ✓ Auto-extract live conversation context (no manual input)")
+        print("  ✓ Framework v1.1 compliance with intelligent content analysis")
+        print("  ✓ Comprehensive validation and file integrity verification")
+        print("  ✓ Health checks and timeline analysis for continuity")
+        print("  ✓ Zero information loss with gap detection")
+        print("  ✓ Verbose progress reporting for full transparency")
+        print()
+        print("AI-First Health Check Process:")
+        print("  ✓ Comprehensive chat system health monitoring")
+        print("  ✓ Proactive issue detection and timeline validation")
+        print("  ✓ Framework v1.1 compliance verification")
+        print("  ✓ Live context alignment validation (optional)")
+        print("  ✓ File integrity and continuity analysis")
+        print("  ✓ Detailed reporting with actionable insights")
+        print("  ✓ Dual-time display: local time with GMT reference for better UX")
         print()
         print("Git Commit Process:")
         print("  ✓ Save current chat first (zero-gap principle)")
