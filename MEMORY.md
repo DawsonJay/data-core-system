@@ -9,11 +9,11 @@ When working with this Data Core System, AI agents MUST follow these behaviors:
 - **Confirm understanding to user:** "I understand and will follow the live recording protocol during this chat"
 - **Begin recording conversation in memory** during normal workflow
 - **Monitor 30-minute timer** and development milestones
-- **Create batch memory files** when timer expires or milestone completed
-- **Use the reliable `cat` method** for file creation (prevents 3-byte file issues)
-- **Validate gapless history** with previous memory files before proceeding
+- **Create chat memories** when timer expires or milestone completed (whichever comes first)
+- **Follow strict procedure** in `chats/chat_memories/procedure.md` for memory creation
+- **Use validation process** `python data_core.py validate memory --file <path>` after creation
 - **Ask periodic value-generating questions** about design decisions, technical choices, and professional insights
-- **Reset 30-minute timer** after each save
+- **Reset 30-minute timer** after each memory creation
 
 ### Data Protection (MANDATORY)
 - **Never modify or delete existing files** - data immutability is absolute
@@ -34,6 +34,13 @@ When working with this Data Core System, AI agents MUST follow these behaviors:
 - **Timestamp everything** - maintain chronological accuracy
 - **Follow established frameworks** - ensure data follows established patterns
 - **Validate results** - check that operations completed successfully
+
+### Chat Memory System (MANDATORY)
+- **Read `chats/chat_memories/framework.md`** for format requirements
+- **Follow `chats/chat_memories/procedure.md`** exactly for memory creation
+- **Use validation process** after each memory creation
+- **Store memories in `chats/chat_memories/temp/`** folder (secure isolated storage)
+- **Maintain gapless history** between all memory files
 
 ---
 

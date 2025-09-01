@@ -42,6 +42,14 @@ def load_value_patterns() -> Dict:
             return get_basic_patterns()
     except Exception as e:
         print(f"    ⚠ Error loading patterns: {e} - using basic patterns")
+        print("    🚨 WARNING: Value pattern loading failed - using fallback patterns")
+        print("    🚨 This may reduce value detection accuracy")
+        print("\nSYSTEM STRENGTHENING RECOMMENDATIONS:")
+        print("1. Check reference/value_patterns.md file integrity")
+        print("2. Verify file permissions and encoding")
+        print("3. Consider implementing pattern validation")
+        print("4. Add pattern loading health checks")
+        print("5. Implement pattern backup and recovery")
         return get_basic_patterns()
 
 def parse_patterns_from_content(content: str) -> Dict:
@@ -494,40 +502,56 @@ def analyze_for_new_patterns(content: str, detected_sections: List[Dict], user_s
 
 def auto_extract_conversation_context():
     """
-    AUTO-EXTRACT current conversation context for AI-first operation.
+    AUTO-EXTRACT current conversation context from memory files in temp subfolder.
     This is the core AI-first design - AI doesn't need to manually provide context.
     """
-    print("  Auto-extracting current conversation context...")
+    print("  Auto-extracting conversation context from memory files...")
     
-    # In a production AI environment, this would access the live conversation
-    # For now, we'll implement a mechanism that can be enhanced based on AI capabilities
+    # Always look in the temp subfolder for memory files
+    memories_dir = "chats/chat_memories/temp"
     
-    try:
-        # Method 1: Check if conversation context was passed as argument
-        if len(sys.argv) > 1:
-            context = sys.argv[1]
-            print(f"    ✓ Conversation context provided via argument ({len(context)} chars)")
-            return context
-            
-        # Method 2: Environment variable (for AI systems that can set this)
-        env_context = os.environ.get('CHAT_CONTEXT')
-        if env_context:
-            print(f"    ✓ Conversation context found in environment ({len(env_context)} chars)")
-            return env_context
-            
-        # Method 3: Attempt to read from stdin (for piped input)
-        if not sys.stdin.isatty():
-            context = sys.stdin.read().strip()
-            if context:
-                print(f"    ✓ Conversation context read from stdin ({len(context)} chars)")
-                return context
+    if not os.path.exists(memories_dir):
+        print(f"    ✗ CRITICAL: Memory directory not found at {memories_dir}")
+        raise ValueError(f"CRITICAL: Memory directory not found at {memories_dir}")
+    
+    # Find all memory files and combine them in chronological order
+    memory_files = []
+    for file in os.listdir(memories_dir):
+        if file.startswith('chat_memory_batch_') and file.endswith('.txt'):
+            try:
+                batch_num = int(file.replace('chat_memory_batch_', '').replace('.txt', ''))
+                memory_files.append((batch_num, file))
+            except ValueError:
+                continue
+    
+    if not memory_files:
+        print(f"    ✗ CRITICAL: No memory files found in {memories_dir}")
+        raise ValueError(f"CRITICAL: No memory files found in {memories_dir}")
+    
+    # Sort by batch number to ensure chronological order
+    memory_files.sort(key=lambda x: x[0])
+    
+    print(f"    ✓ Found {len(memory_files)} memory files to process")
+    
+    # Combine all memory files into one conversation context
+    combined_content = ""
+    for batch_num, filename in memory_files:
+        file_path = os.path.join(memories_dir, filename)
+        print(f"    ✓ Processing {filename} (batch {batch_num:03d})")
         
-        # If no context available, fail hard (AI-first design requirement)
-        raise ValueError("CRITICAL: No conversation context available for extraction")
-        
-    except Exception as e:
-        print(f"    ✗ Auto-extraction failed: {e}")
-        raise
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read().strip()
+                if combined_content:
+                    combined_content += "\n\n" + content
+                else:
+                    combined_content = content
+        except Exception as e:
+            print(f"    ✗ CRITICAL: Error reading {filename}: {e}")
+            raise ValueError(f"CRITICAL: Error reading {filename}: {e}")
+    
+    print(f"    ✓ Combined {len(memory_files)} memory files into {len(combined_content)} characters")
+    return combined_content
 
 def validate_conversation_content(content: str) -> bool:
     """Validate that conversation content is meaningful and sufficient."""
@@ -942,6 +966,37 @@ def verify_file_integrity(filepath: str, expected_content: str) -> Tuple[bool, s
     except Exception as e:
         return False, f"Integrity verification failed: {e}"
 
+def cleanup_memory_files():
+    """Clean up memory files after successful processing."""
+    print("  Cleaning up memory files after successful processing...")
+    
+    memories_dir = "chats/chat_memories/temp"
+    
+    if not os.path.exists(memories_dir):
+        print("    ⚠ Memory directory not found - nothing to clean up")
+        return
+    
+    # Find and remove all memory files
+    memory_files = []
+    for file in os.listdir(memories_dir):
+        if file.startswith('chat_memory_batch_') and file.endswith('.txt'):
+            memory_files.append(file)
+    
+    if not memory_files:
+        print("    ⚠ No memory files found to clean up")
+        return
+    
+    # Remove each memory file
+    for filename in memory_files:
+        file_path = os.path.join(memories_dir, filename)
+        try:
+            os.remove(file_path)
+            print(f"    ✓ Cleaned up {filename}")
+        except Exception as e:
+            print(f"    ⚠ Warning: Could not remove {filename}: {e}")
+    
+    print(f"    ✓ Cleaned up {len(memory_files)} memory files")
+
 def run_health_check_and_timeline(chats_dir: str) -> Dict:
     """Run comprehensive health check and generate timeline."""
     print("  Running health check and timeline analysis...")
@@ -1085,9 +1140,30 @@ def main():
     
     is_valid, issues = validate_framework_compliance(analysis)
     if not is_valid:
-        print("✗ CRITICAL: Framework v2.0 compliance validation failed")
+        print("✗ Framework validation failed ({} issues):".format(len(issues)))
         for issue in issues:
             print(f"  - {issue}")
+        print("\n" + "=" * 70)
+        print("🚨 CRITICAL: FRAMEWORK v2.0 COMPLIANCE VALIDATION FAILED")
+        print("=" * 70)
+        print("ROOT CAUSE ANALYSIS:")
+        print("  - Content insufficient for Framework v2.0 requirements")
+        print("  - This indicates either: content too short, or Framework requirements too strict")
+        print("\nIMMEDIATE RECOVERY STEPS:")
+        print("1. Check memory file content length and quality")
+        print("2. Verify Framework v2.0 minimum requirements")
+        print("3. Consider adjusting Framework requirements for shorter conversations")
+        print("4. Implement content padding for minimum length requirements")
+        print("\nSYSTEM STRENGTHENING RECOMMENDATIONS:")
+        print("1. Add content quality validation before Framework validation")
+        print("2. Implement adaptive Framework requirements based on content length")
+        print("3. Add content enhancement suggestions for short conversations")
+        print("4. Consider implementing progressive Framework compliance levels")
+        print("5. Add content analysis to identify why content is insufficient")
+        print("\nDATA SAFETY STATUS:")
+        print("  - Memory files are preserved and can be retried")
+        print("  - No data loss has occurred")
+        print("  - System can be retried after addressing content issues")
         sys.exit(1)
     print("✓ Framework v2.0 compliance validated")
     
@@ -1197,6 +1273,71 @@ def main():
     print("✓ Zero information loss maintained with enhanced value detection")
     print("✓ AI-first design - no manual intervention required")
     print("✓ Value detection system updated with new learning")
+    
+    # FINAL STEP: Backup and Cleanup with Comprehensive Error Handling
+    print("\n" + "=" * 70)
+    print("FINAL STEP: MEMORY BACKUP AND CLEANUP")
+    print("=" * 70)
+    
+    # CRITICAL: Create backup before cleanup to prevent data loss
+    backup_created = False
+    try:
+        print("  Creating backup of memory files before cleanup...")
+        backup_dir = "chats/chat_memories/backup"
+        os.makedirs(backup_dir, exist_ok=True)
+        
+        # Create timestamped backup
+        timestamp = get_current_gmt_time().strftime("%Y%m%d_%H%M%S")
+        backup_file = f"memory_backup_{timestamp}.tar.gz"
+        backup_path = os.path.join(backup_dir, backup_file)
+        
+        # Create compressed backup of all memory files
+        import tarfile
+        with tarfile.open(backup_path, "w:gz") as tar:
+            memories_dir = "chats/chat_memories/temp"
+            if os.path.exists(memories_dir):
+                for file in os.listdir(memories_dir):
+                    if file.startswith('chat_memory_batch_') and file.endswith('.txt'):
+                        file_path = os.path.join(memories_dir, file)
+                        tar.add(file_path, arcname=file)
+        
+        backup_size = os.path.getsize(backup_path)
+        print(f"    ✓ Backup created successfully: {backup_path} ({backup_size} bytes)")
+        backup_created = True
+        
+    except Exception as e:
+        print(f"    ✗ CRITICAL: Backup creation failed: {e}")
+        print("    🚨 MEMORY CLEANUP ABORTED - Data safety compromised")
+        print("    🚨 Manual intervention required before proceeding")
+        print("\n" + "=" * 70)
+        print("SYSTEM STRENGTHENING RECOMMENDATIONS:")
+        print("=" * 70)
+        print("1. Investigate backup system failure - check disk space, permissions")
+        print("2. Implement redundant backup mechanisms (multiple locations, formats)")
+        print("3. Add backup validation before proceeding with cleanup")
+        print("4. Consider implementing memory file retention policy instead of immediate cleanup")
+        print("5. Add system health checks before critical operations")
+        return False
+    
+    # Only proceed with cleanup if backup was successful
+    if backup_created:
+        try:
+            cleanup_memory_files()
+            print("✓ Memory files cleaned up successfully")
+            print("✓ Memory files cleaned up after successful processing")
+            print(f"✓ Backup preserved at: {backup_path}")
+        except Exception as e:
+            print(f"    ✗ CRITICAL: Memory cleanup failed after backup: {e}")
+            print("    🚨 SYSTEM INTEGRITY COMPROMISED")
+            print("\n" + "=" * 70)
+            print("IMMEDIATE RECOVERY REQUIRED:")
+            print("=" * 70)
+            print("1. Memory files may be in inconsistent state")
+            print("2. Backup exists but cleanup failed - manual intervention needed")
+            print("3. Check file system integrity and permissions")
+            print("4. Verify backup completeness before manual cleanup")
+            print("5. Consider implementing atomic cleanup operations")
+            return False
     
     return True
 

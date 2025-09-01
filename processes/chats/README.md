@@ -49,12 +49,20 @@ User: [exact message content]
 Assistant: [exact response content]
 ```
 
+### **Memory File Location:**
+**CRITICAL:** Memory files are now stored in `chats/chat_memories/temp/` for enhanced security:
+```
+chats/chat_memories/temp/chat_memory_batch_001.txt
+chats/chat_memories/temp/chat_memory_batch_002.txt
+chats/chat_memories/temp/chat_memory_batch_003.txt
+```
+
 ### **Reliable File Creation Method:**
 **CRITICAL:** Use the reliable `cat` method to prevent 3-byte file creation issues:
 
 ```bash
 # ✅ RELIABLE METHOD (use this):
-cat > temp/chat_memory_batch_001.txt << 'EOF'
+cat > chats/chat_memories/temp/chat_memory_batch_001.txt << 'EOF'
 User: [exact message content]
 Assistant: [exact response content]
 User: [next message content]
@@ -73,15 +81,15 @@ edit_file --target_file temp/chat_memory_batch_001.txt --code_edit "[content]"
 
 **Always verify file creation:**
 ```bash
-wc -c temp/chat_memory_batch_001.txt  # Should be > 100 bytes, not 3
+wc -c chats/chat_memories/temp/chat_memory_batch_001.txt  # Should be > 100 bytes, not 3
 ```
 
 ### **Troubleshooting File Creation Issues:**
 
 **If file is only 3 bytes (common problem):**
-1. **Delete the corrupted file:** `rm temp/chat_memory_batch_001.txt`
+1. **Delete the corrupted file:** `rm chats/chat_memories/temp/chat_memory_batch_001.txt`
 2. **Use the reliable `cat` method** shown above
-3. **Verify file size immediately:** `wc -c temp/chat_memory_batch_001.txt`
+3. **Verify file size immediately:** `wc -c chats/chat_memories/temp/chat_memory_batch_001.txt`
 4. **File should be > 100 bytes** for a meaningful conversation
 
 **Common causes of 3-byte files:**
@@ -98,6 +106,18 @@ wc -c temp/chat_memory_batch_001.txt  # Should be > 100 bytes, not 3
 - **Speaker Continuity:** Maintain User → Assistant → User → Assistant pattern
 - **Content Validation:** Verify proper User:/Assistant: format and minimum content length
 - **Fail Hard:** If validation fails, do not create memory file and report error
+
+### **Validation Process:**
+**CRITICAL:** After creating each memory file, validate it using:
+```bash
+python3 data_core.py validate memory --file chats/chat_memories/temp/chat_memory_batch_XXX.txt
+```
+
+**Validation checks:**
+- **Format compliance** - User:/Assistant: pattern validation
+- **Gapless history** - connects seamlessly with previous memory
+- **Content integrity** - file size and corruption checks
+- **Error recovery** - comprehensive failure analysis and recovery guidance
 
 **Validation Tools:**
 - **Import validation functions:** `from scripts.utils.memory_file_validator import validate_memory_file_format, validate_gapless_history`

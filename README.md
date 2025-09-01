@@ -1,10 +1,5 @@
 # Data Core System
 
-## 🚨 CRITICAL: READ THIS FIRST
-**BEFORE doing anything else, read: [`MEMORY.md`](MEMORY.md)**
-
-This file contains the mandatory behaviors you MUST follow when working with this system.
-
 ## Purpose
 This system exists to perfectly preserve and protect irreplaceable development data and professional journey information. Every piece of information, every decision, every learning moment is safeguarded through immutable storage, comprehensive backup strategies, and continuous health monitoring. The data-core is a universal tool for any domain where data preservation and protection matter.
 
