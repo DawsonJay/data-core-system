@@ -10,7 +10,7 @@ type: chat
 framework: framework
 id: [UUID - globally unique identifier]
 timestamp: [ISO timestamp in GMT]
-framework_version: 1.1
+framework_version: 2.0
 ---
 ```
 
@@ -26,6 +26,7 @@ framework_version: 1.1
 - **Implementation Details:** Specific technical decisions, how principles were implemented
 - **Current Status:** What's complete vs. in progress, what's working vs. what needs work
 - **Additional Notes:** Any other information that was discussed
+- **Value-Preserved Content:** High-value conversation content preserved verbatim based on pattern recognition and value detection
 - **Technical Specifications:** System architecture, file metrics, configuration details, and technical parameters
 
 ## AI Historical Record Building
@@ -80,7 +81,7 @@ type: chat
 framework: framework
 id: 8f7d3a2e-1b4c-9d6e-8f2a-3b4c5d6e7f8a
 timestamp: 2025-08-31T13:12:43.000000+00:00
-framework_version: 1.0
+framework_version: 2.0
 ---
 
 # Chat Session Report - Initial System Design

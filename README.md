@@ -1,5 +1,10 @@
 # Data Core System
 
+## 🚨 CRITICAL: READ THIS FIRST
+**BEFORE doing anything else, read: [`MEMORY.md`](MEMORY.md)**
+
+This file contains the mandatory behaviors you MUST follow when working with this system.
+
 ## Purpose
 This system exists to perfectly preserve and protect irreplaceable development data and professional journey information. Every piece of information, every decision, every learning moment is safeguarded through immutable storage, comprehensive backup strategies, and continuous health monitoring. The data-core is a universal tool for any domain where data preservation and protection matter.
 
@@ -30,8 +35,10 @@ This system exists to perfectly preserve and protect irreplaceable development d
 - **Data is sacred** - irreplaceable information requires maximum protection
 
 ## System Structure
-- `chats/` - Chat reports using Chat Report Framework
+- `chats/` - Chat reports using Chat Report Framework v2.0 with value detection
 - `processes/` - Process scripts that enforce rules and frameworks (see `processes/README.md` for AI process creation requirements)
+- `reference/` - Value detection patterns and definitions for enhanced content capture
+- `scripts/utils/` - Utility modules and helper functions for Data Core processes (see `scripts/utils/README.md` for utility creation requirements)
 - **Planned data folders:**
   - `projects/` - Technical project reports and work records
   - `interviews/` - Interview records and feedback
@@ -50,11 +57,52 @@ This system exists to perfectly preserve and protect irreplaceable development d
 1. **Read this master README** to understand the system
 2. **Read the relevant folder README** before working with any data type
 3. **Use the master script** to perform operations: `python data_core.py save chat`
+4. **For utility creation:** Read `scripts/utils/README.md` before creating utility modules
 
 ### Master Script Commands
-- **Save chat report:** `python data_core.py save chat`
+- **Save chat report:** `python data_core.py save chat "structured conversation"`
+- **Save chat from file:** `python data_core.py save chat --file conversation.txt`
 - **Commit with data protection:** `python data_core.py commit "live conversation context"`
 - **Additional commands** will be added as new data types are implemented
+
+### Chat Save Instructions for AI Systems
+**CRITICAL:** Before starting any chat, AI systems MUST read `processes/chats/README.md` for the mandatory live recording protocol.
+
+**For AI Systems Using Terminal Tools:** When calling `run_terminal_cmd`, always include `is_background: false` parameter:
+```json
+{
+  "command": "python3 data_core.py save chat --file temp/chat_memory_batch_001.txt",
+  "is_background": false
+}
+```
+
+**Finding the Last Save:** Check `chats/` folder for the most recent `chat-YYYY-MM-DD-HH-MM.md` file to see when the last conversation was saved.
+
+### Handling Long Conversations
+**For conversations that exceed command line limits, use the file input method:**
+
+```bash
+# Create temp file with full conversation
+echo "User: [full conversation content]" > temp/conversation_$(date +%Y%m%d_%H%M%S).txt
+
+# Save using file input
+python data_core.py save chat --file temp/conversation_*.txt
+
+# Temp file is automatically cleaned up after successful save
+```
+
+**Benefits of file input:**
+- **No length limits** - Handle conversations of any size
+- **Better reliability** - No shell escaping issues
+- **Same processing** - Identical value detection and preservation
+- **Automatic cleanup** - Temp files removed after save
+
+**Example:**
+```bash
+python data_core.py save chat "User: I think we should redesign the speaker detection system to use structured parsing instead of complex pattern matching.
+Assistant: Perfect! You're absolutely right. Let me redesign this to use structured conversation input with clear speaker tags and remove all the unnecessary speech pattern recognition complexity.
+User: yes, and remove the use of the speech recognition reference"
+```
 
 ### Workflow
 1. **Plan your data** - decide what type of information you want to capture
@@ -64,24 +112,39 @@ This system exists to perfectly preserve and protect irreplaceable development d
 5. **Validate results** - check that the operation completed successfully
 6. **Commit with protection** - use `python data_core.py commit` for safe version control
 
-## Enhanced Framework Capabilities
+## Professional Development & Portfolio Integration
 
-### Framework v1.1 Standards
+### How Chat System Feeds Portfolio Building
+- **Authentic Voice Capture:** Preserves your exact words and reasoning about design decisions and technical approaches
+- **Design Decision Narratives:** Complete reasoning processes with alternatives considered and trade-offs analyzed
+- **Technical Implementation Stories:** Detailed explanations of why specific approaches were chosen and how problems were solved
+- **Professional Growth Tracking:** Evolution of your technical philosophy, problem-solving approaches, and working style over time
+- **Portfolio Content Generation:** Rich source material for project descriptions, technical blog posts, and cover letter narratives
+
+### Professional Intelligence System
+- **Career Development Tracking:** Monitor skill development, project evolution, and professional insights over time
+- **Interview Preparation:** Extract specific examples and stories from your development history
+- **LinkedIn Optimization:** Identify key achievements and technical capabilities from conversation records
+- **Resume Enhancement:** Build compelling narratives from actual project work and decision-making processes
+- **Professional Branding:** Develop authentic voice and technical philosophy based on preserved reasoning
+
+### Framework v2.0 Standards
+- **Enhanced Content Capture:** Preserves authentic voice, design reasoning, and technical discussions
 - **Technical Specifications Section:** System architecture, file metrics, configuration details
 - **Enhanced Validation:** Minimum 50 characters per section, comprehensive content quality checks
 - **File Integrity Verification:** Read-back validation to ensure content is actually preserved
-- **Comprehensive Capture:** Real conversation content instead of empty templates
+- **Comprehensive Capture:** Real conversation content with intelligent value extraction
 - **Temporal Organization:** chat-YYYY-MM-DD-HH-MM.md naming with UUID metadata
-- **Professional Quality:** Portfolio-ready documentation with technical specifications
+- **Professional Quality:** Portfolio-ready documentation with preserved authentic content
 
 ## Data Type Systems
 
 ### Chat System
-- **Purpose:** Comprehensive reports with temporal filenames, UUID identification, and zero-gap coverage
-- **Status:** Implemented and ready to use with Framework v1.1
+- **Purpose:** Comprehensive reports with temporal filenames, UUID identification, zero-gap coverage, and enhanced value detection
+- **Status:** Implemented and ready to use with Framework v2.0
 - **How to use:** `python data_core.py save chat`
-- **Framework Version:** 1.1 with Technical Specifications section
-- **Enhanced Features:** Content quality validation, file integrity verification, comprehensive conversation capture
+- **Framework Version:** 2.0 with Value-Preserved Content section and pattern recognition
+- **Portfolio Integration:** Captures authentic voice, design reasoning, and technical discussions for portfolio building and professional development
 
 ### Git Commit System
 - **Purpose:** Safe version control with mandatory backup protection and zero information loss
@@ -163,10 +226,12 @@ This system exists to perfectly preserve and protect irreplaceable development d
 - **Single source of truth** - each rule or requirement exists in only one README
 
 ## Current Status
-- **Implemented:** Enhanced system structure, chat system with Framework v1.1, Git commit system with three-tier backup protection, process system, comprehensive data protection
-- **Ready to use:** Advanced chat reports, safe Git operations with mandatory backups, enhanced validation (50+ chars per section), file integrity verification, rule enforcement, health monitoring
+- **Implemented:** Enhanced system structure, chat system with Framework v2.0 and value detection, Git commit system with three-tier backup protection, process system, comprehensive data protection
+- **Ready to use:** Advanced chat reports with value preservation, safe Git operations with mandatory backups, enhanced validation (50+ chars per section), file integrity verification, rule enforcement, health monitoring
 - **Protection Systems:** Three-tier backup system (major/standard/minor), chat-first workflow, backup verification before commits
-- **Framework Standards:** Framework v1.1 with Technical Specifications section, enhanced content quality requirements
+- **Framework Standards:** Framework v2.0 with Value-Preserved Content section, enhanced content quality requirements
+- **Professional Development:** Portfolio-ready content capture, authentic voice preservation, design reasoning documentation
+- **Career Intelligence:** Comprehensive tracking of development journey, technical decisions, and professional growth
 - **Approach:** TDD - build only what's actually required, continuously improve existing systems
 - **Universal scope:** Ready for any domain where data preservation and protection matter
-- **Recent Enhancements:** Implemented Git commit process with mandatory backup protection, chat-first workflow, automatic backup cleanup
+- **Recent Enhancements:** Implemented Framework v2.0 with enhanced content preservation, professional development tracking, portfolio integration capabilities

@@ -13,17 +13,39 @@ def save_chat():
     print("=" * 60)
     print("DATA CORE - AI-FIRST CHAT SAVE PROCESS")
     print("=" * 60)
-    print("Auto-extracts live conversation and creates Framework v1.1 reports.")
+    print("Auto-extracts live conversation and creates Framework v2.0 reports.")
     print("Zero manual intervention required - designed for AI systems.")
     print("\nStarting AI-first chat save process...")
     
-    # Get live conversation context (this will be provided by AI)
+    # Check for file input or direct conversation context
     if len(sys.argv) < 3:
         print("Error: This process requires live conversation context")
         print("Usage: python data_core.py save chat \"live conversation context\"")
+        print("   or: python data_core.py save chat --file conversation.txt")
         return
     
-    live_context = sys.argv[3]  # argv[1]="save", argv[2]="chat", argv[3]=context
+    # Check if using file input
+    if len(sys.argv) >= 4 and sys.argv[3] == "--file":
+        if len(sys.argv) < 5:
+            print("Error: --file requires a file path")
+            print("Usage: python data_core.py save chat --file conversation.txt")
+            return
+        
+        file_path = sys.argv[4]
+        if not os.path.exists(file_path):
+            print(f"Error: Conversation file not found: {file_path}")
+            return
+        
+        try:
+            with open(file_path, 'r') as f:
+                live_context = f.read()
+            print(f"✓ Loaded conversation from file: {file_path}")
+        except Exception as e:
+            print(f"Error reading conversation file: {e}")
+            return
+    else:
+        # Direct conversation context (backward compatibility)
+        live_context = sys.argv[3]
     
     # Call the AI-first chat save process
     script_path = os.path.join("processes", "chats", "save_chat.py")
@@ -31,6 +53,15 @@ def save_chat():
         try:
             result = subprocess.run([sys.executable, script_path, live_context], 
                                  check=True)
+            
+            # Clean up temp file if it was used
+            if len(sys.argv) >= 4 and sys.argv[3] == "--file":
+                try:
+                    os.remove(file_path)
+                    print(f"✓ Cleaned up temp file: {file_path}")
+                except Exception as e:
+                    print(f"⚠ Warning: Could not clean up temp file {file_path}: {e}")
+                    
         except subprocess.CalledProcessError as e:
             print(f"Error: Chat save process failed: {e}")
     else:
@@ -109,7 +140,8 @@ def main():
         print("Available commands:")
         print()
         print("📝 DATA OPERATIONS:")
-        print("  python data_core.py save chat \"context\"     - AI-first chat capture with auto-extraction")
+        print("  python data_core.py save chat \"User: [msg]\\nAssistant: [response]...\"  - AI-first chat capture")
+        print("  python data_core.py save chat --file conversation.txt                    - AI-first chat capture from file")
         print()
         print("🔍 HEALTH MONITORING:")
         print("  python data_core.py health [\"context\"]      - Comprehensive system health check")

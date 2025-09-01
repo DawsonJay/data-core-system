@@ -1,0 +1,4 @@
+# Temporary conversation files - never commit these
+*.txt
+*.md
+*.tmp
