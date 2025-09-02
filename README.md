@@ -30,11 +30,9 @@ This system exists to perfectly preserve and protect irreplaceable development d
 - **Data is sacred** - irreplaceable information requires maximum protection
 
 ## System Structure
-- `chats/` - Chat reports using Chat Report Framework v2.0 with value detection
+- `chats/` - Chat reports using Framework v3.0 with real-time value capture
 - `processes/` - Process scripts that enforce rules and frameworks (see `processes/README.md` for AI process creation requirements)
-- `reference/` - Value detection patterns and definitions for enhanced content capture
 - `docs/` - Detailed documentation for complex system aspects (see `docs/README.md` for available guides)
-- `scripts/utils/` - Utility modules and helper functions for Data Core processes (see `scripts/utils/README.md` for utility creation requirements)
 - **Planned data folders:**
   - `projects/` - Technical project reports and work records
   - `interviews/` - Interview records and feedback
@@ -53,7 +51,7 @@ This system exists to perfectly preserve and protect irreplaceable development d
 1. **Read this master README** to understand the system
 2. **Read the relevant folder README** before working with any data type
 3. **Use the master script** to perform operations: `python data_core.py save chat`
-4. **For utility creation:** Read `scripts/utils/README.md` before creating utility modules
+4. **For process creation:** Read `processes/README.md` before creating new processes
 
 ### Master Script Commands
 - **Save chat report:** `python data_core.py save chat "structured conversation"`
@@ -61,18 +59,16 @@ This system exists to perfectly preserve and protect irreplaceable development d
 - **Commit with data protection:** `python data_core.py commit "live conversation context"`
 - **Additional commands** will be added as new data types are implemented
 
-### Chat Save Instructions for AI Systems
-**CRITICAL:** Before starting any chat, AI systems MUST read `processes/chats/README.md` for the mandatory Natural Value Extraction protocol.
+### Real-Time Value Capture System for AI
+**CRITICAL:** AI systems now use the real-time value capture system defined in `MEMORY.md` and `chats/system/framework.md`.
 
-**Natural Value Extraction System:**
-- **During conversation:** AI naturally identifies valuable content and writes it to memory files (like `conversation_memory.md`)
-- **When saving:** AI calls `python data_core.py save chat` - the system automatically reads from memory files
-- **No input required:** Save process is fully autonomous - reads AI's value log from memory files automatically
-- **System creates:** Framework v2.0 compliant records with context snapshots + new insights
-- **Smart Deduplication:** System intelligently separates context (narrative building) from value (specific insights)
-- **Context Evolution:** Allows similarity for narrative continuity (90%+ tolerance)
-- **Value Deduplication:** Prevents repetition of specific insights (strict blocking)
-- **Quick Saves:** Enables frequent captures for short work sessions
+**Real-Time Value Capture System:**
+- **During conversation:** AI automatically identifies valuable content and creates chat records immediately
+- **No save process needed:** AI creates `chat-YYYY-MM-DD-HH-MM.md` files directly when value is identified
+- **Framework v3.0:** Simple three-section structure (Context, Insight, Technical) for immediate capture
+- **Zero workflow disruption:** Natural conversation flow with autonomous value extraction
+- **Learning system:** AI continuously improves capture quality through `chats/system/value_learning.md`
+- **Gapless history:** Maintains complete conversation coverage through validation
 
 **For AI Systems Using Terminal Tools:** When calling `run_terminal_cmd`, always include `is_background: false` parameter:
 ```json
@@ -82,37 +78,36 @@ This system exists to perfectly preserve and protect irreplaceable development d
 }
 ```
 
-**Finding the Last Save:** Check `chats/` folder for the most recent `chat-YYYY-MM-DD-HH-MM.md` file to see when the last conversation was saved.
+**Finding Recent Captures:** Check `chats/` folder for the most recent `chat-YYYY-MM-DD-HH-MM.md` file to see when the last valuable content was captured.
 
-**IMPORTANT - How the Save Process Actually Works:**
-1. **AI writes value log to memory files** during conversation (like `conversation_memory.md`)
-2. **AI calls save command:** `python data_core.py save chat`
-3. **System automatically reads** from memory files where AI wrote the value log
-4. **No manual input required** - the process is fully autonomous
-5. **System creates Framework v2.0 record** with extracted content from memory files
+**IMPORTANT - How the Real-Time Capture System Works:**
+1. **AI identifies valuable content** during conversation using the framework in `MEMORY.md`
+2. **AI creates chat record immediately:** Creates `chat-YYYY-MM-DD-HH-MM.md` file directly
+3. **No save process needed** - AI captures value in real-time without delays
+4. **Framework v3.0 structure** - Simple three-section format for immediate use
+5. **Learning system updates** - AI improves capture quality through `value_learning.md`
 
-**📚 COMPLETE GUIDE:** For a detailed explanation of the save process, see: `docs/save_chat_process.md`
+**📚 COMPLETE GUIDE:** For a detailed explanation of the real-time value capture system, see: `docs/real_time_value_capture_framework.md`
 
-### How Natural Value Extraction Works
+### How Real-Time Value Capture Works
 
 **During Conversation:**
-- AI reads `reference/value_definitions.md` and `reference/value_patterns.md`
-- AI naturally identifies valuable content using reference file guidance
-- AI writes value log to memory files (like `conversation_memory.md`) without disrupting workflow
-- AI captures insights, decisions, and important content as they emerge
+- AI follows the framework in `MEMORY.md` to identify valuable content
+- AI naturally recognizes design decisions, problem solutions, and learning insights
+- AI creates chat records immediately when value is identified
+- AI maintains gapless conversation history through validation
 
-**When Saving:**
-- AI calls `python data_core.py save chat` - no input required
-- **System automatically reads** AI's value log from memory files
-- Save process checks for duplication against previous records
-- New record contains: current context snapshot + new unique insights extracted from memory files
-- System maintains gapless history while preventing redundancy
+**When Capturing Value:**
+- AI creates `chat-YYYY-MM-DD-HH-MM.md` file directly using Framework v3.0
+- **No save process needed** - immediate capture without delays
+- AI updates learning system through `value_learning.md` to improve future captures
+- System maintains complete conversation coverage with professional-quality records
 
 **Benefits:**
-- **No workflow disruption** - saves happen when you choose
-- **Natural value recognition** - leverages AI's inherent abilities
-- **Quality assurance** - process validates everything before saving
-- **Continuous learning** - reference files improve over time
+- **Zero workflow disruption** - captures happen naturally during conversation
+- **Immediate value recognition** - leverages AI's inherent abilities in real-time
+- **Quality assurance** - framework ensures professional-quality records
+- **Continuous learning** - AI improves capture quality over time
 - **Gapless history** - maintains complete development narrative
 
 ### Workflow
@@ -139,24 +134,22 @@ This system exists to perfectly preserve and protect irreplaceable development d
 - **Resume Enhancement:** Build compelling narratives from actual project work and decision-making processes
 - **Professional Branding:** Develop authentic voice and technical philosophy based on preserved reasoning
 
-### Framework v2.0 Standards
-- **Smart Content Structure:** Context Snapshot (narrative building) + New Insights (specific value)
-- **Content-Aware Deduplication:** Distinguishes between context evolution and value duplication
-- **Context Evolution:** High similarity tolerance (90%+) for narrative continuity
-- **Value Deduplication:** Strict blocking of repeated insights and decisions
-- **Enhanced Validation:** Minimum 50 characters per section, comprehensive content quality checks
-- **File Integrity Verification:** Read-back validation to ensure content is actually preserved
-- **Comprehensive Capture:** Real conversation content with intelligent value extraction
-- **Temporal Organization:** chat-YYYY-MM-DD-HH-MM.md naming with UUID metadata
+### Framework v3.0 Standards
+- **Simple Content Structure:** Context Snapshot + Valuable Insight + Technical Specifications
+- **Real-Time Capture:** Immediate creation of chat records when value is identified
+- **Learning System:** AI continuously improves capture quality through `value_learning.md`
+- **Gapless History:** Maintains complete conversation coverage through validation
 - **Professional Quality:** Portfolio-ready documentation with preserved authentic content
-- **Quick Save Support:** Enables frequent captures for short work sessions
+- **Zero Disruption:** Natural conversation flow with autonomous value extraction
+- **Temporal Organization:** chat-YYYY-MM-DD-HH-MM.md naming with UUID metadata
+- **AI-First Design:** Optimized for autonomous operation and continuous improvement
 
 ## Data Type Systems
 
 ### Chat System
-- **Purpose:** Comprehensive reports with temporal filenames, UUID identification, zero-gap coverage, and smart content-aware deduplication
-- **Status:** Implemented and ready to use with Framework v2.0
-- **How to use:** `python data_core.py save chat`
+- **Purpose:** Real-time value capture with temporal filenames, UUID identification, zero-gap coverage, and continuous learning
+- **Status:** Implemented and ready to use with Framework v3.0
+- **How to use:** AI automatically creates chat records when valuable content is identified
 - **Framework Version:** 2.0 with Context Snapshot + New Insights structure and smart deduplication
 - **Portfolio Integration:** Captures authentic voice, design reasoning, and technical discussions for portfolio building and professional development
 - **Smart Deduplication:** Distinguishes between context evolution (narrative building) and value duplication (specific insights)
@@ -241,12 +234,12 @@ This system exists to perfectly preserve and protect irreplaceable development d
 - **Single source of truth** - each rule or requirement exists in only one README
 
 ## Current Status
-- **Implemented:** Enhanced system structure, chat system with Framework v2.0 and value detection, Git commit system with three-tier backup protection, process system, comprehensive data protection
+- **Implemented:** Enhanced system structure, chat system with Framework v3.0 and real-time value capture, Git commit system with three-tier backup protection, process system, comprehensive data protection
 - **Ready to use:** Advanced chat reports with value preservation, safe Git operations with mandatory backups, enhanced validation (50+ chars per section), file integrity verification, rule enforcement, health monitoring
 - **Protection Systems:** Three-tier backup system (major/standard/minor), chat-first workflow, backup verification before commits
-- **Framework Standards:** Framework v2.0 with Value-Preserved Content section, enhanced content quality requirements
+- **Framework Standards:** Framework v3.0 with real-time value capture, enhanced content quality requirements
 - **Professional Development:** Portfolio-ready content capture, authentic voice preservation, design reasoning documentation
 - **Career Intelligence:** Comprehensive tracking of development journey, technical decisions, and professional growth
 - **Approach:** TDD - build only what's actually required, continuously improve existing systems
 - **Universal scope:** Ready for any domain where data preservation and protection matter
-- **Recent Enhancements:** Implemented Framework v2.0 with enhanced content preservation, professional development tracking, portfolio integration capabilities
+- **Recent Enhancements:** Implemented Framework v3.0 with real-time value capture, professional development tracking, portfolio integration capabilities

@@ -9,24 +9,14 @@ import os
 import subprocess
 
 def save_chat():
-    """Save chat using the AI-first chat save process with memory files."""
+    """Real-time value capture system - no save process needed."""
     print("=" * 60)
-    print("DATA CORE - AI-FIRST CHAT SAVE PROCESS")
+    print("DATA CORE - REAL-TIME VALUE CAPTURE SYSTEM")
     print("=" * 60)
-    print("Auto-extracts conversation from memory files and creates Framework v2.0 reports.")
-    print("Zero manual intervention required - designed for AI systems.")
-    print("\nStarting AI-first chat save process...")
-    
-    # Call the AI-first chat save process (no arguments needed - it auto-discovers memory files)
-    script_path = os.path.join("processes", "chats", "save_chat.py")
-    if os.path.exists(script_path):
-        try:
-            result = subprocess.run([sys.executable, script_path], 
-                                 check=True)
-        except subprocess.CalledProcessError as e:
-            print(f"Error: Chat save process failed: {e}")
-    else:
-        print(f"Error: Chat save script not found at {script_path}")
+    print("The save process has been replaced with real-time value capture.")
+    print("AI automatically creates chat records when valuable content is identified.")
+    print("\nNo manual save process needed - system operates automatically.")
+    print("See MEMORY.md and chats/system/framework.md for details.")
 
 def validate_memory():
     """Validate chat memory files using the validation process."""
@@ -95,7 +85,7 @@ def git_commit():
     print("=" * 60)
     print("DATA CORE - GIT COMMIT PROCESS")
     print("=" * 60)
-    print("This will save current chat, create tiered backups, then commit safely.")
+    print("This will create tiered backups, then commit safely.")
     print("Data protection first - zero information loss principle maintained.")
     print("\nStarting Git commit process...")
     
@@ -121,6 +111,7 @@ def git_commit():
 def main():
     if len(sys.argv) > 1:
         if len(sys.argv) > 1 and sys.argv[1] == "save" and len(sys.argv) > 2 and sys.argv[2] == "chat":
+            print("Note: Save process replaced with real-time value capture. See MEMORY.md for details.")
             save_chat()
         elif len(sys.argv) > 2 and sys.argv[1] == "validate" and sys.argv[2] == "memory":
             validate_memory()
@@ -136,7 +127,7 @@ def main():
         print("Available commands:")
         print()
         print("📝 DATA OPERATIONS:")
-        print("  python data_core.py save chat                    - AI-first chat capture from memory files")
+        print("  python data_core.py save chat                    - Note: Replaced with real-time value capture")
         print("  python data_core.py validate memory --file <path> - Validate chat memory files")
         print()
         print("🔍 HEALTH MONITORING:")
@@ -147,14 +138,14 @@ def main():
         print()
         print("📊 PROCESS DETAILS:")
         print()
-        print("AI-First Chat Save Process:")
-        print("  ✓ Auto-extract conversation from memory files (no manual input)")
-        print("  ✓ Framework v2.0 compliance with intelligent content analysis")
-        print("  ✓ Comprehensive validation and file integrity verification")
-        print("  ✓ Health checks and timeline analysis for continuity")
-        print("  ✓ Zero information loss with gap detection")
-        print("  ✓ Automatic backup creation before memory cleanup")
-        print("  ✓ Verbose progress reporting for full transparency")
+        print("Real-Time Value Capture System:")
+        print("  ✓ AI automatically creates chat records when value is identified")
+        print("  ✓ Framework v3.0 compliance with real-time capture")
+        print("  ✓ No save process needed - immediate creation of records")
+        print("  ✓ Learning system continuously improves capture quality")
+        print("  ✓ Zero workflow disruption - natural conversation flow")
+        print("  ✓ Gapless history maintained through validation")
+        print("  ✓ Professional portfolio-ready documentation")
         print()
         print("Memory Validation Process:")
         print("  ✓ Format compliance validation (User:/Assistant: pattern)")
@@ -166,20 +157,19 @@ def main():
         print("AI-First Health Check Process:")
         print("  ✓ Comprehensive chat system health monitoring")
         print("  ✓ Proactive issue detection and timeline validation")
-        print("  ✓ Framework v2.0 compliance verification")
+        print("  ✓ Framework v3.0 compliance verification")
         print("  ✓ Live context alignment validation (optional)")
         print("  ✓ File integrity and continuity analysis")
         print("  ✓ Detailed reporting with actionable insights")
         print("  ✓ Dual-time display: local time with GMT reference for better UX")
         print()
         print("Git Commit Process:")
-        print("  ✓ Save current chat first (zero-gap principle)")
         print("  ✓ Analyze changes and suggest backup level (major/standard/minor)")
         print("  ✓ Create backup branch on GitHub before committing")
-        print("  ✓ Auto-generate commit message from chat and changes")
+        print("  ✓ Auto-generate commit message from changes")
         print("  ✓ Only commit after successful backup creation")
         print("  ✓ Keep last 5 backups of each type")
-        print("  ✓ Data protection first - fail hard if chat save fails")
+        print("  ✓ Data protection first - comprehensive backup strategy")
 
 if __name__ == "__main__":
     main()

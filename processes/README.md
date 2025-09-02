@@ -66,14 +66,14 @@ Traditional approach: Put rules in README, hope AI reads and follows them.
 
 ### Established Process Patterns
 
-**1. Chat Operations (`chats/save_chat.py`)**
+**1. Chat Operations (Real-Time Value Capture)**
 ```
-Pattern: AI asked "save this chat" → finds process → auto-reads from memory files → enforces Framework v2.0
-✓ Auto-reads AI value log from memory files (conversation_memory.md, etc.)
-✓ Enforces all framework requirements automatically
-✓ Provides comprehensive health checks and timeline
-✓ Verbose step-by-step reporting
-✓ **Fully autonomous** - no AI input required during execution
+Pattern: AI automatically identifies valuable content → creates chat records immediately → maintains gapless history
+✓ Real-time value capture using Framework v3.0
+✓ No save process needed - immediate creation of chat records
+✓ Maintains complete conversation coverage through validation
+✓ Learning system continuously improves capture quality
+✓ **Fully autonomous** - AI operates independently during conversation
 ```
 
 **2. Git Operations (`git_commit.py`)**
@@ -148,9 +148,9 @@ User asks AI to do something → AI finds appropriate process → AI runs proces
 ```
 
 **Examples:**
-- "Save this chat" → AI finds `chats/save_chat.py` → Auto-extracts conversation → Saves & reports
 - "Commit work" → AI finds `git_commit.py` → Backup-first workflow → Commits & reports  
-- "Refresh chat history" → AI finds `refresh_chat_history.py` → Loads last 5 records → Reports timeline
+- "Check chat health" → AI finds `chats/chat_health_check.py` → Validates system → Reports timeline
+- "Capture value" → AI automatically creates chat records using Framework v3.0
 
 ## Technical Standards
 
@@ -160,7 +160,6 @@ processes/
 ├── README.md (this file)
 ├── process_name.py (individual process scripts)  
 ├── chats/ (chat-specific processes)
-│   ├── save_chat.py
 │   └── chat_health_check.py
 └── [other_data_types]/ (future data type processes)
 ```
@@ -197,7 +196,7 @@ processes/
 - **Comprehensive Validation**: Every aspect of data integrity is checked automatically
 
 ### Examples of Rule Enforcement
-- **Framework Compliance**: save_chat.py enforces Framework v2.0 automatically
+- **Framework Compliance**: AI automatically enforces Framework v3.0 through real-time capture
 - **Smart Deduplication**: save_chat.py enforces content-aware duplication prevention
 - **Backup Requirements**: git_commit.py MUST create backups before commits
 - **Content Validation**: All processes validate data quality before saving
@@ -218,7 +217,7 @@ When creating new processes:
 ## Current Process Status
 
 ### Implemented & Ready
-- **Chat Save Process**: `chats/save_chat.py` - AI-first chat capture with Framework v2.0 and smart deduplication
+- **Real-Time Value Capture**: AI automatically creates chat records using Framework v3.0
 - **Git Commit Process**: `git_commit.py` - Backup-first commit with three-tier protection  
 - **Chat Health Check**: `chats/chat_health_check.py` - Timeline and validation reporting
 

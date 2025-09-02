@@ -131,9 +131,9 @@ touch chats/system/value_learning.md
 - ✅ Only chat save process is eliminated
 - ✅ System becomes more focused and maintainable
 
-### **Utility Scripts**
-- ✅ `scripts/` - Helper functions remain
-- ✅ System utilities continue to function
+### **Process Scripts**
+- ✅ `processes/` - Core process scripts remain
+- ✅ System processes continue to function
 
 ## Benefits of Cleanup
 

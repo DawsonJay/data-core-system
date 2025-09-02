@@ -9,9 +9,28 @@ Simple templates for creating chat records immediately when you identify valuabl
 type: chat
 framework: framework
 id: [generate UUID]
-timestamp: [current GMT time]
+timestamp: [MUST verify with: date -u command]
 framework_version: 3.0
 ---
+
+**⚠️ TIMESTAMP REQUIREMENT - READ BEFORE PROCEEDING:**
+**You MUST verify the current GMT time before filling in the timestamp above.**
+
+**Step 1: Get Current GMT Time**
+```bash
+date -u
+```
+
+**Step 2: Use the exact output as your timestamp**
+- Format: `YYYY-MM-DDTHH:MM:SS.000000+00:00`
+- Example: `2025-09-02T21:53:00.000000+00:00`
+- **NEVER estimate or use placeholder times**
+- **NEVER trust local system time without verification**
+
+**Step 3: Verify your timestamp format is correct**
+- Must end with `+00:00` (GMT/UTC timezone)
+- Must use exact time from `date -u` command
+- Must follow ISO 8601 format exactly
 ```
 
 ## **Content Structure (Three Simple Sections)**
@@ -55,11 +74,11 @@ Framework v3.0 real-time capture system. AI-first design with autonomous value e
 type: chat
 framework: framework
 id: 82dcd6b6-72e4-4836-ac1f-41112ca57ede
-timestamp: 2025-09-02T14:30:00.000000+00:00
+timestamp: 2025-09-02T21:53:00.000000+00:00
 framework_version: 3.0
 ---
 
-# Chat Session Report - 2025-09-02 14:30
+# Chat Session Report - 2025-09-02 21:53
 
 ## Context Snapshot
 **Current Project:** Building a new real-time value capture system
@@ -91,9 +110,17 @@ Create a record when you see:
 
 ## **How to Use This Framework**
 1. **Copy the template** from above
-2. **Fill in the brackets** with real information
-3. **Save the file** in the `chats/` folder
-4. **Update your learning** in `chats/system/value_learning.md`
+2. **⚠️ VERIFY GMT TIME FIRST** - Run `date -u` command
+3. **Fill in the brackets** with real information (use exact GMT time)
+4. **Save the file** in the `chats/` folder
+5. **Update your learning** in `chats/system/value_learning.md`
+
+**CRITICAL TIMESTAMP REQUIREMENTS:**
+- **Always run `date -u`** before creating any record
+- **Use exact GMT time** - no estimates or placeholders
+- **Format must be:** `YYYY-MM-DDTHH:MM:SS.000000+00:00`
+- **Timezone must be:** `+00:00` (GMT/UTC)
+- **Verify format is correct** before saving
 
 ## **Start Simple**
 - Don't worry about being perfect
