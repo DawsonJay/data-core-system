@@ -33,6 +33,7 @@ This system exists to perfectly preserve and protect irreplaceable development d
 - `chats/` - Chat reports using Chat Report Framework v2.0 with value detection
 - `processes/` - Process scripts that enforce rules and frameworks (see `processes/README.md` for AI process creation requirements)
 - `reference/` - Value detection patterns and definitions for enhanced content capture
+- `docs/` - Detailed documentation for complex system aspects (see `docs/README.md` for available guides)
 - `scripts/utils/` - Utility modules and helper functions for Data Core processes (see `scripts/utils/README.md` for utility creation requirements)
 - **Planned data folders:**
   - `projects/` - Technical project reports and work records
@@ -64,10 +65,10 @@ This system exists to perfectly preserve and protect irreplaceable development d
 **CRITICAL:** Before starting any chat, AI systems MUST read `processes/chats/README.md` for the mandatory Natural Value Extraction protocol.
 
 **Natural Value Extraction System:**
-- AI naturally identifies valuable content during conversation
-- AI maintains a value log of insights, decisions, and important content
-- AI provides value log to save process when requested
-- System creates Framework v2.0 compliant records with context snapshots + new insights
+- **During conversation:** AI naturally identifies valuable content and writes it to memory files (like `conversation_memory.md`)
+- **When saving:** AI calls `python data_core.py save chat` - the system automatically reads from memory files
+- **No input required:** Save process is fully autonomous - reads AI's value log from memory files automatically
+- **System creates:** Framework v2.0 compliant records with context snapshots + new insights
 - **Smart Deduplication:** System intelligently separates context (narrative building) from value (specific insights)
 - **Context Evolution:** Allows similarity for narrative continuity (90%+ tolerance)
 - **Value Deduplication:** Prevents repetition of specific insights (strict blocking)
@@ -83,18 +84,28 @@ This system exists to perfectly preserve and protect irreplaceable development d
 
 **Finding the Last Save:** Check `chats/` folder for the most recent `chat-YYYY-MM-DD-HH-MM.md` file to see when the last conversation was saved.
 
+**IMPORTANT - How the Save Process Actually Works:**
+1. **AI writes value log to memory files** during conversation (like `conversation_memory.md`)
+2. **AI calls save command:** `python data_core.py save chat`
+3. **System automatically reads** from memory files where AI wrote the value log
+4. **No manual input required** - the process is fully autonomous
+5. **System creates Framework v2.0 record** with extracted content from memory files
+
+**📚 COMPLETE GUIDE:** For a detailed explanation of the save process, see: `docs/save_chat_process.md`
+
 ### How Natural Value Extraction Works
 
 **During Conversation:**
 - AI reads `reference/value_definitions.md` and `reference/value_patterns.md`
 - AI naturally identifies valuable content using reference file guidance
-- AI maintains value log without disrupting workflow
+- AI writes value log to memory files (like `conversation_memory.md`) without disrupting workflow
 - AI captures insights, decisions, and important content as they emerge
 
 **When Saving:**
-- AI provides comprehensive value log to save process
+- AI calls `python data_core.py save chat` - no input required
+- **System automatically reads** AI's value log from memory files
 - Save process checks for duplication against previous records
-- New record contains: current context snapshot + new unique insights
+- New record contains: current context snapshot + new unique insights extracted from memory files
 - System maintains gapless history while preventing redundancy
 
 **Benefits:**

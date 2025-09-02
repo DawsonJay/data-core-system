@@ -68,11 +68,12 @@ Traditional approach: Put rules in README, hope AI reads and follows them.
 
 **1. Chat Operations (`chats/save_chat.py`)**
 ```
-Pattern: AI asked "save this chat" → finds process → auto-extracts conversation → enforces Framework v1.1
-✓ Auto-extracts live conversation context
+Pattern: AI asked "save this chat" → finds process → auto-reads from memory files → enforces Framework v2.0
+✓ Auto-reads AI value log from memory files (conversation_memory.md, etc.)
 ✓ Enforces all framework requirements automatically
 ✓ Provides comprehensive health checks and timeline
 ✓ Verbose step-by-step reporting
+✓ **Fully autonomous** - no AI input required during execution
 ```
 
 **2. Git Operations (`git_commit.py`)**

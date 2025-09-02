@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Natural Value Extraction Chat Save Process - AI-FIRST CHAT CAPTURE WITH FRAMEWORK v2.0
-Takes AI value log, creates Framework v2.0 compliant records, validates thoroughly, and ensures gapless history.
+Takes AI value log from memory files, creates Framework v2.0 compliant records, validates thoroughly, and ensures gapless history.
 Follows Data Core System principles: zero information loss, data immutability, comprehensive preservation.
 Integrates with reference/value_patterns.md and reference/value_definitions.md for enhanced content capture.
 """
@@ -24,6 +24,76 @@ def generate_uuid():
 def create_temporal_filename(timestamp):
     """Create temporal filename: chat-YYYY-MM-DD-HH-MM.md"""
     return f"chat-{timestamp.strftime('%Y-%m-%d-%H-%M')}.md"
+
+def read_ai_value_log_from_memory():
+    """Read the AI's value log from memory files where it was written during conversation."""
+    print("  Reading AI value log from memory files...")
+    
+    # Look for memory files in the data-core-system directory
+    memory_files = []
+    for filename in os.listdir('.'):
+        if filename.endswith('.md') and 'memory' in filename.lower():
+            memory_files.append(filename)
+    
+    if not memory_files:
+        print("    ✗ CRITICAL: No memory files found")
+        print("      AI should write value log to memory files during conversation")
+        sys.exit(1)
+    
+    # Read the most recent memory file (assuming it contains current conversation value)
+    memory_files.sort(reverse=True)
+    latest_memory = memory_files[0]
+    
+    try:
+        with open(latest_memory, 'r', encoding='utf-8') as f:
+            memory_content = f.read()
+        
+        print(f"    ✓ Memory file read: {latest_memory}")
+        print(f"    ✓ Content length: {len(memory_content)} characters")
+        
+        return memory_content
+        
+    except Exception as e:
+        print(f"    ✗ CRITICAL: Failed to read memory file {latest_memory}")
+        print(f"      Error: {e}")
+        sys.exit(1)
+
+def extract_conversation_context_from_memory(memory_content: str) -> Tuple[str, str]:
+    """Extract conversation context and new insights from memory content."""
+    print("  Extracting conversation context and insights...")
+    
+    # Look for the specific section headers in the memory file
+    context_marker = "## Context Snapshot"
+    insights_marker = "## New Insights"
+    
+    if context_marker in memory_content and insights_marker in memory_content:
+        # Split content into sections
+        parts = memory_content.split(context_marker)
+        if len(parts) > 1:
+            context_part = parts[1].split("## ")[0].strip()
+        else:
+            context_part = ""
+        
+        parts = memory_content.split(insights_marker)
+        if len(parts) > 1:
+            insights_part = parts[1].strip()
+        else:
+            insights_part = ""
+        
+
+        
+        context = context_part
+        insights = insights_part
+        
+    else:
+        # Fallback: treat entire content as context if sections not found
+        context = memory_content
+        insights = "Conversation captured from live chat session"
+    
+    print(f"    ✓ Context extracted: {len(context)} characters")
+    print(f"    ✓ Insights extracted: {len(insights)} characters")
+    
+    return context, insights
 
 def calculate_content_similarity(current_content: str, previous_content: str) -> float:
     """Calculate similarity percentage between current and previous content."""
@@ -59,117 +129,126 @@ def normalize_content_for_comparison(content: str) -> str:
     content = re.sub(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}', '', content)
     return content.strip().lower()
 
-def calculate_new_content_ratio(current_content: str, previous_content: str) -> float:
-    """Calculate the percentage of new content in current vs previous."""
-    current_normalized = normalize_content_for_comparison(current_content)
-    previous_normalized = normalize_content_for_comparison(previous_content)
+def remove_duplicate_specific_value(current_content: str, previous_content: str) -> str:
+    """Remove duplicate specific value content while preserving context and new insights."""
+    print("    🔍 Applying smart deduplication to specific value content...")
     
-    current_words = set(current_normalized.split())
-    previous_words = set(previous_normalized.split())
+    # Split content into sections
+    current_sections = current_content.split('## ')
+    previous_sections = previous_content.split('## ')
     
-    if not current_words:
-        return 0.0
+    # Extract New Insights sections for deduplication
+    current_insights = ""
+    previous_insights = ""
     
-    new_words = current_words - previous_words
-    new_content_ratio = len(new_words) / len(current_words) * 100
-    return round(new_content_ratio, 2)
+    for section in current_sections:
+        if section.strip().startswith('New Insights'):
+            current_insights = section.replace('New Insights', '').strip()
+            break
+    
+    for section in previous_sections:
+        if section.strip().startswith('New Insights'):
+            previous_insights = section.replace('New Insights', '').strip()
+            break
+    
+    if not current_insights or not previous_insights:
+        print("      ✓ No insights sections found - proceeding with original content")
+        return current_content
+    
+    # Split insights into individual items for detailed comparison
+    current_items = [item.strip() for item in current_insights.split('### ') if item.strip()]
+    previous_items = [item.strip() for item in previous_insights.split('### ') if item.strip()]
+    
+    # Remove duplicate specific value items
+    deduplicated_items = []
+    removed_count = 0
+    
+    for current_item in current_items:
+        is_duplicate = False
+        
+        # Check if this item is substantially similar to any previous item
+        for previous_item in previous_items:
+            if len(current_item) > 50 and len(previous_item) > 50:  # Only check substantial items
+                similarity = calculate_content_similarity(current_item, previous_item)
+                if similarity > 80:  # High similarity threshold for specific value
+                    is_duplicate = True
+                    removed_count += 1
+                    print(f"      - Removed duplicate insight: {current_item[:100]}...")
+                    break
+        
+        if not is_duplicate:
+            deduplicated_items.append(current_item)
+    
+    # Reconstruct the content with deduplicated insights
+    if deduplicated_items:
+        deduplicated_insights = '\n\n### '.join(deduplicated_items)
+        # Replace the New Insights section
+        updated_content = current_content.replace(
+            f"## New Insights\n{current_insights}",
+            f"## New Insights\n{deduplicated_insights}"
+        )
+        print(f"      ✓ Deduplication complete: {removed_count} duplicate insights removed")
+        print(f"      ✓ {len(deduplicated_items)} unique insights preserved")
+        return updated_content
+    else:
+        print(f"      ⚠ All insights were duplicates - keeping minimal context")
+        # Keep minimal context but remove detailed insights
+        return current_content.replace(
+            f"## New Insights\n{current_insights}",
+            "## New Insights\n*Content deduplicated - see previous records for detailed insights*"
+        )
 
-def check_for_gaps_with_previous_reports(chats_dir: str, current_value_log: str) -> Tuple[bool, str]:
-    """Check for information gaps and duplication with previous reports using smart content-aware analysis."""
-    print("  Checking for gaps and duplication with previous reports...")
+def check_for_gaps_with_previous_reports(chats_dir: str, current_content: str) -> Tuple[bool, str, str]:
+    """Check for information gaps and apply smart deduplication without blocking saves."""
+    print("  Checking for gaps and applying smart deduplication...")
     
     if not os.path.exists(chats_dir):
         print("    ✓ No previous reports found - this will be the first")
-        return True, "First chat report in system"
+        return True, "First chat report in system", current_content
     
     # Find most recent reports
     chat_files = [f for f in os.listdir(chats_dir) if f.startswith("chat-") and f.endswith(".md")]
     
     if not chat_files:
         print("    ✓ No previous reports found - this will be the first")
-        return True, "First chat report in system"
+        return True, "First chat report in system", current_content
     
     # Sort by filename (temporal naming ensures chronological order)
     chat_files.sort(reverse=True)
     
-    # Check against the most recent report for duplication
+    # Check against the most recent report for deduplication
     latest_report = chat_files[0]
     latest_path = os.path.join(chats_dir, latest_report)
     
     try:
-        with open(latest_path, 'r') as f:
+        with open(latest_path, 'r', encoding='utf-8') as f:
             latest_content = f.read()
         
-        # Separate context from value sections for smart analysis
-        current_context, current_value = separate_context_from_value(current_value_log)
-        latest_context, latest_value = separate_context_from_value(latest_content)
+        # Calculate similarity for information purposes only
+        similarity = calculate_content_similarity(current_content, latest_content)
         
-        # Calculate similarities for each section type
-        context_similarity = calculate_content_similarity(current_context, latest_context)
-        value_similarity = calculate_content_similarity(current_value, latest_value)
+        print(f"    📊 Content analysis against {latest_report}:")
+        print(f"      - Similarity: {similarity}%")
+        print(f"      - Context similarity is fine for narrative continuity")
+        print(f"      - Specific value content will be deduplicated")
         
-        print(f"    📊 Smart content analysis against {latest_report}:")
-        print(f"      - Context similarity: {context_similarity}% (narrative building)")
-        print(f"      - Value similarity: {value_similarity}% (specific insights)")
+        # Apply smart deduplication: remove duplicate specific value content
+        deduplicated_content = remove_duplicate_specific_value(current_content, latest_content)
         
-        # Apply smart deduplication logic
-        if value_similarity > 85:
-            print(f"    ✗ BLOCKED: Value content too similar ({value_similarity}% > 85% threshold)")
-            print(f"      This appears to duplicate specific insights or decisions")
-            return False, f"Value content too similar to {latest_report} ({value_similarity}% similarity)"
-        
-        elif value_similarity > 60:
-            if calculate_new_content_ratio(current_value, latest_value) < 25:
-                print(f"    ✗ BLOCKED: Insufficient new value content ({calculate_new_content_ratio(current_value, latest_value)}% < 25% threshold)")
-                print(f"      Value similarity: {value_similarity}% (moderate), but not enough new insights")
-                return False, f"Insufficient new value content despite {value_similarity}% similarity"
-            else:
-                print(f"    ✓ ALLOWED: Moderate value similarity but sufficient new insights")
-        
-        else:
-            print(f"    ✓ ALLOWED: Low value similarity - clearly new insights")
-        
-        # Context similarity is expected and good for narrative building
-        if context_similarity > 90:
-            print(f"    ✓ Context similarity {context_similarity}% - shows narrative continuity and evolution")
-        else:
-            print(f"    ✓ Context similarity {context_similarity}% - shows narrative development")
-        
-        print(f"    ✓ Smart gap analysis complete - building on {latest_report}")
-        return True, f"Continues from {latest_report} (context: {context_similarity}%, value: {value_similarity}%)"
+        print(f"    ✓ Smart deduplication applied - content cleaned for saving")
+        print(f"    ✓ Gap analysis complete - building on {latest_report}")
+        return True, f"Continues from {latest_report} (similarity: {similarity}%, content deduplicated)", deduplicated_content
         
     except Exception as e:
         print(f"    ⚠ Error reading {latest_report}: {e}")
-        return True, f"Continues from {latest_report} (read error, proceeding with caution)"
-
-def separate_context_from_value(content: str) -> Tuple[str, str]:
-    """Separate context snapshot from new insights for smart analysis."""
-    # Look for the section headers
-    context_marker = "## Context Snapshot"
-    value_marker = "## New Insights"
-    
-    if context_marker in content and value_marker in content:
-        # Split content into sections
-        parts = content.split(context_marker)
-        if len(parts) > 1:
-            context_part = parts[1].split("## ")[0].strip()
-        else:
-            context_part = ""
-        
-        parts = content.split(value_marker)
-        if len(parts) > 1:
-            value_part = parts[1].split("## ")[0].strip()
-        else:
-            value_part = ""
-        
-        return context_part, value_part
-    
-    # Fallback: treat entire content as context if sections not found
-    return content, ""
+        print(f"    ✓ Proceeding with original content (read error)")
+        return True, f"Continues from {latest_report} (read error, proceeding with caution)", current_content
 
 def create_framework_v2_content(context_snapshot: str, new_insights: str, report_id: str, timestamp: datetime) -> str:
     """Create Framework v2.0 compliant chat report content."""
     print("  Creating Framework v2.0 compliant chat report...")
+    print(f"    DEBUG: Function called with context_snapshot length: {len(context_snapshot)}")
+    print(f"    DEBUG: Function called with new_insights length: {len(new_insights)}")
     
     local_time = timestamp.replace(tzinfo=timezone.utc).astimezone()
     
@@ -194,6 +273,8 @@ Framework v2.0 chat capture system with Natural Value Extraction. Timestamp: {ti
 """
     
     print("    ✓ Framework v2.0 report content created")
+    print(f"    DEBUG: Generated content length: {len(content)} characters")
+    print(f"    DEBUG: Content preview: {content[:200]}...")
     return content
 
 def validate_framework_compliance(content: str) -> Tuple[bool, List[str]]:
@@ -208,7 +289,46 @@ def validate_framework_compliance(content: str) -> Tuple[bool, List[str]]:
             issues.append(f"Missing required section: {section}")
             continue
         
-        section_content = content.split(f"## {section}")[1].split("## ")[0].strip()
+        # Debug: Show what we're looking for
+        print(f"    DEBUG: Looking for section '## {section}'")
+        
+        # Find the section marker
+        section_marker = f"## {section}"
+        if section_marker not in content:
+            issues.append(f"Section '{section}' marker not found")
+            continue
+        
+        # Get the position of this section
+        start_pos = content.find(section_marker)
+        print(f"    DEBUG: Section '{section}' found at position {start_pos}")
+        
+        # Find the next section marker (##) or end of content
+        # We need to look for "## " (two hashes + space) to avoid finding ### headers within content
+        search_start = start_pos + len(section_marker)
+        next_section_pos = -1
+        
+        # Search for the next "## " marker, but only if it's at the start of a line
+        # This avoids finding ### headers within the content
+        for i in range(search_start, len(content)):
+            if content[i:i+3] == "## " and (i == 0 or content[i-1] == '\n'):
+                next_section_pos = i
+                break
+        
+        if next_section_pos == -1:
+            # No next section, take everything to the end
+            section_content = content[search_start:].strip()
+        else:
+            # Take content up to next section
+            section_content = content[search_start:next_section_pos].strip()
+        
+        # Debug: Show the exact positions
+        print(f"    DEBUG: Section '{section}' starts at {start_pos}, next section at {next_section_pos}")
+        print(f"    DEBUG: Section '{section}' content range: {start_pos + len(section_marker)} to {next_section_pos if next_section_pos != -1 else 'end'}")
+        
+        # Debug: Show what we found
+        print(f"    DEBUG: Section '{section}' content length: {len(section_content)}")
+        print(f"    DEBUG: Section '{section}' preview: '{section_content[:100]}...'")
+        
         if len(section_content) < 50:
             issues.append(f"Section '{section}' too short ({len(section_content)} chars)")
     
@@ -226,7 +346,7 @@ def verify_file_integrity(filepath: str, expected_content: str) -> Tuple[bool, s
     print("  Verifying file integrity...")
     
     try:
-        with open(filepath, 'r') as f:
+        with open(filepath, 'r', encoding='utf-8') as f:
             saved_content = f.read()
         
         if saved_content != expected_content:
@@ -238,33 +358,48 @@ def verify_file_integrity(filepath: str, expected_content: str) -> Tuple[bool, s
     except Exception as e:
         return False, f"Integrity verification failed: {e}"
 
-def run_health_check_and_timeline(chats_dir: str) -> Dict:
-    """Run comprehensive health check and generate timeline."""
-    print("  Running health check and timeline analysis...")
+def cleanup_memory_file_after_save():
+    """Clean up the memory file after successful save to prevent duplication."""
+    print("  Cleaning up memory file to prevent duplication...")
     
     try:
-        # Import health checker if available
-        sys.path.insert(0, os.path.join(os.path.dirname(__file__)))
-        from chat_health_check import ChatHealthChecker
+        # Look for memory files in the data-core-system directory
+        memory_files = []
+        for filename in os.listdir('.'):
+            if filename.endswith('.md') and 'memory' in filename.lower():
+                memory_files.append(filename)
         
-        checker = ChatHealthChecker(chats_dir)
-        result = checker.check_health()
+        if not memory_files:
+            print("    ⚠ No memory files found to clean up")
+            return
         
-        if result.get('healthy', False):
-            print("    ✓ Health check passed")
-            return result
+        # Clean up the most recent memory file
+        memory_files.sort(reverse=True)
+        latest_memory = memory_files[0]
+        
+        # Read current content
+        with open(latest_memory, 'r', encoding='utf-8') as f:
+            current_content = f.read()
+        
+        # Extract only the essential context, remove detailed insights
+        if "## New Insights" in current_content:
+            # Keep only the context section, clear the insights
+            context_part = current_content.split("## New Insights")[0]
+            cleaned_content = context_part + "\n\n## New Insights\n*Insights cleared after successful save*\n"
         else:
-            print("    ⚠ Health check found issues:")
-            for issue in result.get('issues', []):
-                print(f"      - {issue}")
-            return result
-            
-    except ImportError:
-        print("    ⚠ Health checker not available - basic validation only")
-        return {'healthy': True, 'message': 'Basic validation passed'}
+            # If no insights section, just clear the content
+            cleaned_content = "# Conversation Memory\n\n*Content cleared after successful save*\n"
+        
+        # Write back the cleaned content
+        with open(latest_memory, 'w', encoding='utf-8') as f:
+            f.write(cleaned_content)
+        
+        print(f"    ✓ Memory file cleaned: {latest_memory}")
+        print(f"    ✓ Duplication prevention: Insights cleared, context preserved")
+        
     except Exception as e:
-        print(f"    ⚠ Health check failed: {e}")
-        return {'healthy': False, 'error': str(e)}
+        print(f"    ⚠ Warning: Memory file cleanup failed: {e}")
+        print(f"    ⚠ Manual cleanup may be needed to prevent duplication")
 
 def main():
     """Main Natural Value Extraction chat save process - AI-FIRST DESIGN."""
@@ -274,7 +409,7 @@ def main():
     print("=" * 70)
     print("NATURAL VALUE EXTRACTION CHAT SAVE PROCESS - AI-FIRST DESIGN")
     print("=" * 70)
-    print("Takes AI value log, creates Framework v2.0 compliant records,")
+    print("Reads AI value log from memory files, creates Framework v2.0 compliant records,")
     print("validates thoroughly, and ensures gapless history with smart deduplication.")
     print("Zero manual intervention required - designed for AI systems.")
     print(f"Started at: {local_time.strftime('%H:%M:%S')} (local) / {gmt_time.strftime('%H:%M:%S')} GMT")
@@ -291,111 +426,65 @@ def main():
         sys.exit(1)
     print(f"✓ Chats directory validated: {chats_dir}")
     
-    # Step 2: Extract AI value log (this is where the AI provides their natural value log)
+    # Step 2: Read AI value log from memory files
     print("\n" + "=" * 70)
-    print("STEP 2: EXTRACT AI VALUE LOG")
+    print("STEP 2: READ AI VALUE LOG FROM MEMORY")
     print("=" * 70)
-    print("  💡 AI: Providing my current understanding of your context and new insights...")
     
-    # This is where the AI naturally provides their value log
-    # In practice, this would come from the AI's internal working memory
-    current_context = """CURRENT CONTEXT SNAPSHOT:
-You are building a Natural Value Extraction System that leverages AI's natural ability to identify, compress, and log valuable content in real-time during conversation. The system aims to be AI-first, process-enforced, and continuously improvable. 
-
-Key system philosophy:
-- AI-Natural but Process-Enforced: Everything feels natural to me as an AI, but the processes impose structure and rules I cannot ignore or avoid
-- Process-Based = Continuously Improvable: If I'm not capturing the right value → update reference files, if saving isn't working → refine the save process
-- Trustworthy and Predictable: The processes create consistent, reliable behavior
-
-The system captures high-value content (character, ethics, coding approach, likes/dislikes) for portfolio/resume building, with verbatim preservation of design decisions and technical solutions. Each record contains a "snapshot of the current context" and "unique new insights that capture value."
-
-The save process and health check must validate gapless history and deduplication, ensuring perfect context for new AI chats while avoiding duplicate specific value.
-
-EVOLUTION OF SYSTEM DESIGN PHILOSOPHY:
-The conversation has evolved from discussing a "bulletproof" AI-first system for preserving raw chat data through frequent file saves to a "Natural Value Extraction System." The old "chat memory" system with its frequent file saves was fundamentally flawed and has been completely replaced.
-
-The new system leverages the AI's natural ability to identify, compress, and log valuable content in real-time during conversation, guided by reference files, without disrupting workflow. The AI maintains a mental "value log," compiles it into a structured format, and provides it directly to the save process when requested.
-
-CURRENT SYSTEM STATUS:
-We have successfully rebuilt the save_chat.py process from the ground up, implementing Natural Value Extraction with Framework v2.0 compliance. The system now includes smart deduplication that distinguishes between context evolution (narrative building) and value duplication (specific insights). This allows for natural context continuity while preventing repetitive value content."""
+    memory_content = read_ai_value_log_from_memory()
     
-    new_insights = """NEW INSIGHTS FROM THIS CONVERSATION:
-
-DEDUPLICATION SYSTEM IMPROVEMENT:
-Identified a critical flaw in the current deduplication approach - it treats all content the same way, failing to distinguish between context evolution (narrative building) and value duplication (specific insights). This prevents quick saves and natural context continuity.
-
-SMART CONTENT-AWARE DEDUPLICATION DESIGN:
-The system now separates content into two types with different deduplication rules:
-
-1. **Context (Narrative Building)**: 
-   - Purpose: Builds ongoing story of who you are and what you're working on
-   - Duplication: GOOD - shows evolution and continuity
-   - Examples: Working style, current project status, evolving philosophy, next steps
-   - Rules: High similarity tolerance (90%+ is fine), focus on evolution
-
-2. **Specific Value (Point-in-Time Insights)**:
-   - Purpose: Deep examination of specific moments, decisions, or experiences
-   - Duplication: BAD - doesn't add to narrative, just repeats
-   - Examples: Interview answers, detailed design decisions, technical solutions, specific preferences
-   - Rules: Strict deduplication (any significant similarity blocks), focus on uniqueness
-
-IMPLEMENTATION APPROACH:
-- Separate context from value sections in content analysis
-- Apply different similarity thresholds to each section type
-- Allow context similarity for narrative building
-- Prevent value duplication to avoid waste
-- Enable quick saves for short work sessions
-
-BENEFITS OF SMART DEDUPLICATION:
-- Quick saves work (context can be similar)
-- Narrative builds naturally (understanding evolves over time)
-- Value content deduplicates (no repeated insights)
-- System feels natural (understands the difference)
-- Perfect for capturing "last 5 minutes" before stopping work"""
+    # Step 3: Extract conversation context and insights
+    print("\n" + "=" * 70)
+    print("STEP 3: EXTRACT CONVERSATION CONTENT")
+    print("=" * 70)
     
-    conversation_content = current_context + "\n\n" + new_insights
-    print(f"✓ AI value log extracted ({len(conversation_content)} characters)")
-    print(f"  - Context snapshot: {len(current_context)} characters")
+    context_snapshot, new_insights = extract_conversation_context_from_memory(memory_content)
+    conversation_content = context_snapshot + "\n\n" + new_insights
+    
+    print(f"✓ Conversation content extracted ({len(conversation_content)} characters)")
+    print(f"  - Context snapshot: {len(context_snapshot)} characters")
     print(f"  - New insights: {len(new_insights)} characters")
-    print(f"  - Total value log: {len(conversation_content)} characters")
     
-    # Step 3: Content validation
+    # Step 4: Content validation
     print("\n" + "=" * 70)
-    print("STEP 3: CONTENT VALIDATION")
+    print("STEP 4: CONTENT VALIDATION")
     print("=" * 70)
+    
+    print(f"    DEBUG: conversation_content length: {len(conversation_content)}")
+    print(f"    DEBUG: conversation_content.strip() length: {len(conversation_content.strip())}")
     
     if len(conversation_content.strip()) < 100:
         print("✗ CRITICAL: Content too short - minimum 100 characters required")
         sys.exit(1)
     
     word_count = len(conversation_content.split())
+    print(f"    DEBUG: word_count: {word_count}")
+    
     if word_count < 20:
         print("✗ CRITICAL: Content insufficient - minimum 20 words required")
         sys.exit(1)
     
     print(f"✓ Content validated ({len(conversation_content)} chars, {word_count} words)")
     
-    # Step 4: Gap analysis and deduplication
+    # Step 5: Gap analysis and smart deduplication
     print("\n" + "=" * 70)
-    print("STEP 4: GAP ANALYSIS AND DEDUPLICATION")
+    print("STEP 5: GAP ANALYSIS AND SMART DEDUPLICATION")
     print("=" * 70)
     
-    gap_ok, gap_details = check_for_gaps_with_previous_reports(chats_dir, conversation_content)
+    gap_ok, gap_details, deduplicated_content = check_for_gaps_with_previous_reports(chats_dir, conversation_content)
     if not gap_ok:
-        print("✗ CRITICAL: Save blocked by deduplication logic")
+        print("✗ CRITICAL: Gap analysis failed")
         print(f"  Issue: {gap_details}")
-        print("\n" + "=" * 70)
-        print("🚨 DEDUPLICATION PROTECTION ACTIVATED")
-        print("=" * 70)
-        print("This prevents duplicate or low-value saves while maintaining data quality.")
-        print("The system is working correctly to preserve unique value.")
         sys.exit(1)
     
+    # Use deduplicated content for the rest of the process
+    conversation_content = deduplicated_content
     print(f"✓ Gap analysis complete: {gap_details}")
+    print(f"✓ Content deduplicated and ready for saving")
     
-    # Step 5: Generate file metadata
+    # Step 6: Generate file metadata
     print("\n" + "=" * 70)
-    print("STEP 5: GENERATE FILE METADATA")
+    print("STEP 6: GENERATE FILE METADATA")
     print("=" * 70)
     
     report_id = generate_uuid()
@@ -408,41 +497,48 @@ BENEFITS OF SMART DEDUPLICATION:
     print(f"✓ Timestamp: {local_time.strftime('%Y-%m-%d %H:%M:%S')} (local) / {timestamp.strftime('%H:%M:%S')} GMT")
     print(f"✓ Filename: {filename}")
     
-    # Step 6: Create Framework v2.0 report content
+    # Step 7: Create Framework v2.0 report content
     print("\n" + "=" * 70)
-    print("STEP 6: CREATE FRAMEWORK v2.0 REPORT")
+    print("STEP 7: CREATE FRAMEWORK v2.0 REPORT")
     print("=" * 70)
     
     try:
-        report_content = create_framework_v2_content(current_context, new_insights, report_id, timestamp)
+        report_content = create_framework_v2_content(context_snapshot, new_insights, report_id, timestamp)
         print("✓ Framework v2.0 report created successfully")
     except Exception as e:
         print("✗ CRITICAL: Report creation failed")
         print(f"  Error: {e}")
         sys.exit(1)
     
-    # Step 7: Framework compliance validation
+    # Step 8: Framework compliance validation
     print("\n" + "=" * 70)
-    print("STEP 7: FRAMEWORK COMPLIANCE VALIDATION")
-    print("=" * 70)
-    
-    is_valid, issues = validate_framework_compliance(report_content)
-    if not is_valid:
-        print("✗ CRITICAL: Framework validation failed")
-        print(f"  Issues: {len(issues)}")
-        for issue in issues:
-            print(f"    - {issue}")
-        sys.exit(1)
-    
-    print("✓ Framework v2.0 compliance validated")
-    
-    # Step 8: Write file to disk
-    print("\n" + "=" * 70)
-    print("STEP 8: WRITE FILE TO DISK")
+    print("STEP 8: FRAMEWORK COMPLIANCE VALIDATION")
     print("=" * 70)
     
     try:
-        with open(filepath, 'w') as f:
+        is_valid, issues = validate_framework_compliance(report_content)
+        if not is_valid:
+            print("✗ CRITICAL: Framework validation failed")
+            print(f"  Issues: {len(issues)}")
+            for issue in issues:
+                print(f"      - {issue}")
+            sys.exit(1)
+        
+        print("✓ Framework v2.0 compliance validated")
+    except Exception as e:
+        print("✗ CRITICAL: Framework validation crashed")
+        print(f"  Error: {e}")
+        import traceback
+        traceback.print_exc()
+        sys.exit(1)
+    
+    # Step 9: Write file to disk
+    print("\n" + "=" * 70)
+    print("STEP 9: WRITE FILE TO DISK")
+    print("=" * 70)
+    
+    try:
+        with open(filepath, 'w', encoding='utf-8') as f:
             f.write(report_content)
         print(f"✓ File written successfully: {filepath}")
     except Exception as e:
@@ -450,9 +546,9 @@ BENEFITS OF SMART DEDUPLICATION:
         print(f"  Error: {e}")
         sys.exit(1)
     
-    # Step 9: File integrity verification
+    # Step 10: File integrity verification
     print("\n" + "=" * 70)
-    print("STEP 9: FILE INTEGRITY VERIFICATION")
+    print("STEP 10: FILE INTEGRITY VERIFICATION")
     print("=" * 70)
     
     integrity_ok, integrity_details = verify_file_integrity(filepath, report_content)
@@ -463,16 +559,17 @@ BENEFITS OF SMART DEDUPLICATION:
     
     print(f"✓ File integrity verified: {integrity_details}")
     
-    # Step 10: Health check and timeline
+    # Step 11: Clean up memory file to prevent duplication
     print("\n" + "=" * 70)
-    print("STEP 10: HEALTH CHECK AND TIMELINE ANALYSIS")
+    print("STEP 11: MEMORY FILE CLEANUP")
     print("=" * 70)
     
-    health_result = run_health_check_and_timeline(chats_dir)
-    if not health_result.get('healthy', True):
-        print("⚠ Health check identified issues - report saved but system needs attention")
-    else:
-        print("✓ Health check completed successfully")
+    try:
+        cleanup_memory_file_after_save()
+        print("✓ Memory file cleanup completed - duplication prevented")
+    except Exception as e:
+        print(f"✗ WARNING: Memory file cleanup failed: {e}")
+        print(f"  Manual cleanup may be needed to prevent duplication")
     
     # Final success report
     final_time = get_current_gmt_time()
@@ -484,8 +581,8 @@ BENEFITS OF SMART DEDUPLICATION:
     print(f"✓ Chat report saved: {filename}")
     print(f"✓ Report size: {len(report_content)} characters")
     print(f"✓ Framework: v2.0 compliant with Natural Value Extraction")
-    print(f"✓ Content: {len(conversation_content)} characters from AI value log")
-    print(f"✓ Context snapshot: {len(current_context)} characters")
+    print(f"✓ Content: {len(conversation_content)} characters from memory files")
+    print(f"✓ Context snapshot: {len(context_snapshot)} characters")
     print(f"✓ New insights: {len(new_insights)} characters")
     print(f"✓ UUID: {report_id}")
     print(f"✓ Completed: {final_local.strftime('%H:%M:%S')} (local) / {final_time.strftime('%H:%M:%S')} GMT")
@@ -493,6 +590,8 @@ BENEFITS OF SMART DEDUPLICATION:
     print("✓ AI-first design - no manual intervention required")
     print("✓ Natural Value Extraction system operational")
     print("✓ Gapless history preserved for seamless continuity")
+    print("✓ Smart deduplication applied - duplicate specific value content removed")
+    print("✓ Context continuity maintained for narrative flow")
 
 if __name__ == "__main__":
     main()

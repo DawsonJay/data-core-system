@@ -13,12 +13,14 @@ The chat system now uses **Natural Value Extraction** instead of frequent memory
 
 **1. During Conversation:**
 - AI naturally identifies valuable insights, decisions, and important content
-- AI maintains a value log in working memory
+- **AI writes value log to memory files** (like `conversation_memory.md`) in the data-core-system directory
 - No workflow disruption - value extraction happens organically
+- **Memory files are the source of truth** for what the AI wants to save
 
 **2. When Saving:**
-- AI provides its value log to the save chat process
-- Process creates Framework v2.0 compliant record
+- AI calls `python data_core.py save chat` - **no input required**
+- **System automatically reads** AI's value log from memory files
+- Process creates Framework v2.0 compliant record from extracted content
 - Process validates record thoroughly before saving
 - Process checks for gaps with previous records
 - Process ensures deduplication while maintaining narrative flow
@@ -35,21 +37,20 @@ The chat system now uses **Natural Value Extraction** instead of frequent memory
 
 **When asked to save a chat:**
 
-1. **Compile your value log** from the conversation:
-   - Key insights discovered
-   - Decisions made
-   - Important technical details
-   - Design choices and reasoning
-   - Action items identified
+1. **Write your value log to a memory file** during the conversation:
+   - Create a file like `conversation_memory.md` in the data-core-system directory
+   - Include key insights discovered, decisions made, important technical details
+   - Use the format with `## Context Snapshot` and `## New Insights` sections
+   - **This file is what the save process will read automatically**
 
 2. **Call the save process:**
    ```bash
    python data_core.py save chat
    ```
 
-3. **The process will:**
-   - Take your value log
-   - Create a Framework v2.0 compliant record
+3. **The process will automatically:**
+   - **Read your value log from memory files** (no input required)
+   - Create a Framework v2.0 compliant record from the extracted content
    - Validate it thoroughly
    - Check for gaps with previous records
    - Save the record
@@ -65,26 +66,30 @@ The chat system now uses **Natural Value Extraction** instead of frequent memory
 - **Meaningful content** that adds to the development story
 - **Natural language** - write as you would naturally organize your thoughts
 
-**Example value log:**
+**Example memory file format (`conversation_memory.md`):**
+```markdown
+# Conversation Memory - [Brief Description]
+
+## Context Snapshot
+[Your current understanding of the situation, working context, system status]
+
+## New Insights
+
+### [Topic 1]
+[Specific insights, decisions, or important content discovered]
+
+### [Topic 2]  
+[More insights, technical details, or important findings]
+
+### [Topic 3]
+[Additional value content that should be preserved]
 ```
-CONTEXT SNAPSHOT:
-You are building a Natural Value Extraction System that leverages AI's natural ability to identify, compress, and log valuable content in real-time during conversation. The system aims to be AI-first, process-enforced, and continuously improvable.
 
-Key system philosophy:
-- AI-Natural but Process-Enforced: Everything feels natural to me as an AI, but the processes impose structure and rules I cannot ignore or avoid
-- Process-Based = Continuously Improvable: If I'm not capturing the right value → update reference files, if saving isn't working → refine the save process
-
-NEW INSIGHTS:
-I think this is important: We need to redesign the save chat process to work with Natural Value Extraction instead of memory files.
-
-The core issue is that the old system was too disruptive to workflow, requiring frequent file saves every few minutes.
-
-I decided to implement a hybrid approach where the AI creates comprehensive chat records and the Python script handles deduplication while preserving narrative flow.
-
-This approach leverages the AI's natural ability to identify and organize valuable content without disrupting the conversation flow.
-
-We must ensure that each record adds new value to the coherent story while maintaining gapless history through logical progression.
-```
+**Key Points:**
+- **File must be in data-core-system directory** (same directory as `data_core.py`)
+- **Must have `## Context Snapshot` and `## New Insights` sections**
+- **Content should be meaningful** (minimum 100 characters, 20+ words)
+- **Save process reads this file automatically** when you call `python data_core.py save chat`
 
 ### Benefits
 
@@ -128,13 +133,24 @@ The system now intelligently distinguishes between two types of content for opti
 4. **AI reads README** to understand the procedure
 5. **AI follows procedure** to use the script effectively
 
+**CRITICAL UNDERSTANDING:**
+- **The save process is NOT interactive** - it reads from memory files automatically
+- **AI writes to memory files during conversation** - this is the input mechanism
+- **AI calls save command** - system handles everything else autonomously
+- **No manual input required** - the process is designed to be completely hands-off
+
+**📚 NEED MORE DETAILS?** 
+If you need a complete explanation of how the save process works, see: `../../docs/save_chat_process.md`
+This document provides step-by-step guidance for any AI that needs to understand the system.
+
 ## Process Files
 
 ### save_chat.py
 - **Purpose:** Natural Value Extraction chat save process
-- **Input:** AI value log from conversation
+- **Input:** **Automatically reads from memory files** where AI wrote value log during conversation
 - **Output:** Framework v2.0 compliant chat record
 - **Features:** Comprehensive validation, gap analysis, deduplication, reference file updates
+- **Key:** **Fully autonomous** - no AI input required during execution
 
 ### chat_health_check.py
 - **Purpose:** Validate chat system health and timeline
