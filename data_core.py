@@ -81,32 +81,13 @@ def health_check():
         print(f"Error: Health check script not found at {script_path}")
 
 def git_commit():
-    """Commit changes with data protection using the Git commit process."""
+    """Git commit functionality temporarily removed during system transformation."""
     print("=" * 60)
     print("DATA CORE - GIT COMMIT PROCESS")
     print("=" * 60)
-    print("This will create tiered backups, then commit safely.")
-    print("Data protection first - zero information loss principle maintained.")
-    print("\nStarting Git commit process...")
-    
-    # Get live conversation context (this will be provided by AI)
-    if len(sys.argv) < 3:
-        print("Error: This process requires live conversation context")
-        print("Usage: python data_core.py commit \"live conversation context\"")
-        return
-    
-    live_context = sys.argv[2]
-    
-    # Call the git commit process
-    script_path = os.path.join("processes", "git_commit.py")
-    if os.path.exists(script_path):
-        try:
-            result = subprocess.run([sys.executable, script_path, live_context], 
-                                 check=True)
-        except subprocess.CalledProcessError as e:
-            print(f"Error: Git commit process failed: {e}")
-    else:
-        print(f"Error: Git commit script not found at {script_path}")
+    print("Git commit functionality has been temporarily removed.")
+    print("Use standard git commands for now: git add, git commit, git push")
+    print("\nThis will be reimplemented when the new system architecture is ready.")
 
 def main():
     if len(sys.argv) > 1:
@@ -134,7 +115,7 @@ def main():
         print("  python data_core.py health [\"context\"]      - Comprehensive system health check")
         print()
         print("🔐 GIT OPERATIONS:")
-        print("  python data_core.py commit \"live context\"   - Backup + commit with data protection")
+        print("  python data_core.py commit                   - Note: Temporarily removed during system transformation")
         print()
         print("📊 PROCESS DETAILS:")
         print()
@@ -163,13 +144,7 @@ def main():
         print("  ✓ Detailed reporting with actionable insights")
         print("  ✓ Dual-time display: local time with GMT reference for better UX")
         print()
-        print("Git Commit Process:")
-        print("  ✓ Analyze changes and suggest backup level (major/standard/minor)")
-        print("  ✓ Create backup branch on GitHub before committing")
-        print("  ✓ Auto-generate commit message from changes")
-        print("  ✓ Only commit after successful backup creation")
-        print("  ✓ Keep last 5 backups of each type")
-        print("  ✓ Data protection first - comprehensive backup strategy")
+
 
 if __name__ == "__main__":
     main()

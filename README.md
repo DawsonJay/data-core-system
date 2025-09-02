@@ -9,7 +9,7 @@ This system exists to perfectly preserve and protect irreplaceable development d
 - **Complete History:** Every decision, mistake, and success is recorded
 - **No Overwriting:** New information creates new records, never replaces old ones
 - **File Protection:** Files can NEVER be modified or deleted once created
-- **Mandatory Backup Before Commit:** All Git commits MUST be preceded by comprehensive backups
+
 - **Time Verification:** Always verify correct GMT time before recording timestamps
 - **GMT Timezone Only:** Use only GMT/UTC timezone to avoid regional/VPN issues
 
@@ -154,12 +154,7 @@ This system exists to perfectly preserve and protect irreplaceable development d
 - **Portfolio Integration:** Captures authentic voice, design reasoning, and technical discussions for portfolio building and professional development
 - **Smart Deduplication:** Distinguishes between context evolution (narrative building) and value duplication (specific insights)
 
-### Git Commit System
-- **Purpose:** Safe version control with mandatory backup protection and zero information loss
-- **Status:** Implemented and ready to use
-- **How to use:** `python data_core.py commit "live conversation context"`
-- **Protection Features:** Three-tier backup system (major/standard/minor), chat-first workflow, backup verification
-- **Data Safety:** Chat saved first, backups created before commit, automatic cleanup of old backups
+
 
 ### Process System
 - **Purpose:** Automated rule enforcement with verbose output and validation
@@ -196,9 +191,7 @@ This system exists to perfectly preserve and protect irreplaceable development d
   - **Standard backups:** Moderate feature changes, multiple file modifications
   - **Minor backups:** Routine updates, small fixes, every commit gets at least minor backup
   - **Retention policy:** Keep last 5 of each backup type on GitHub branches
-- **Mandatory Pre-Commit Backup:** No Git commit allowed without successful backup creation
-- **Backup Verification:** All backups verified before allowing commit to proceed
-- **Chat-First Workflow:** Always save current conversation before any Git operations
+
 - **Continuous Validation:** Automated checks ensure data integrity and framework compliance
 - **Health Monitoring:** System continuously monitors file health and data quality
 - **Early Warning Systems:** Detect potential problems before they cause data loss
@@ -234,9 +227,9 @@ This system exists to perfectly preserve and protect irreplaceable development d
 - **Single source of truth** - each rule or requirement exists in only one README
 
 ## Current Status
-- **Implemented:** Enhanced system structure, chat system with Framework v3.0 and real-time value capture, Git commit system with three-tier backup protection, process system, comprehensive data protection
+- **Implemented:** Enhanced system structure, chat system with Framework v3.0 and real-time value capture, process system, comprehensive data protection
 - **Ready to use:** Advanced chat reports with value preservation, safe Git operations with mandatory backups, enhanced validation (50+ chars per section), file integrity verification, rule enforcement, health monitoring
-- **Protection Systems:** Three-tier backup system (major/standard/minor), chat-first workflow, backup verification before commits
+- **Protection Systems:** Comprehensive data protection and validation systems
 - **Framework Standards:** Framework v3.0 with real-time value capture, enhanced content quality requirements
 - **Professional Development:** Portfolio-ready content capture, authentic voice preservation, design reasoning documentation
 - **Career Intelligence:** Comprehensive tracking of development journey, technical decisions, and professional growth

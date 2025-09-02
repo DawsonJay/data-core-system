@@ -127,7 +127,7 @@ touch chats/system/value_learning.md
 - ✅ Design decisions and framework evolution documented
 
 ### **Process Scripts (Simplified)**
-- ✅ `processes/` - Other processes remain (git commit, etc.)
+- ✅ `processes/` - Core processes remain (chat health check, etc.)
 - ✅ Only chat save process is eliminated
 - ✅ System becomes more focused and maintainable
 

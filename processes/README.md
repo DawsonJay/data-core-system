@@ -76,14 +76,7 @@ Pattern: AI automatically identifies valuable content → creates chat records i
 ✓ **Fully autonomous** - AI operates independently during conversation
 ```
 
-**2. Git Operations (`git_commit.py`)**
-```  
-Pattern: AI asked "commit work" → finds process → saves chat first → creates backups → commits safely
-✓ Chat-first workflow (zero-gap principle)
-✓ Three-tier backup system (major/standard/minor)
-✓ Mandatory backup before commit
-✓ Auto-generates commit messages
-```
+
 
 **3. Health Check Operations (`chats/chat_health_check.py`)**
 ```
@@ -148,7 +141,6 @@ User asks AI to do something → AI finds appropriate process → AI runs proces
 ```
 
 **Examples:**
-- "Commit work" → AI finds `git_commit.py` → Backup-first workflow → Commits & reports  
 - "Check chat health" → AI finds `chats/chat_health_check.py` → Validates system → Reports timeline
 - "Capture value" → AI automatically creates chat records using Framework v3.0
 
@@ -198,7 +190,7 @@ processes/
 ### Examples of Rule Enforcement
 - **Framework Compliance**: AI automatically enforces Framework v3.0 through real-time capture
 - **Smart Deduplication**: save_chat.py enforces content-aware duplication prevention
-- **Backup Requirements**: git_commit.py MUST create backups before commits
+
 - **Content Validation**: All processes validate data quality before saving
 - **Zero Information Loss**: Gap detection prevents missing data
 
@@ -218,7 +210,7 @@ When creating new processes:
 
 ### Implemented & Ready
 - **Real-Time Value Capture**: AI automatically creates chat records using Framework v3.0
-- **Git Commit Process**: `git_commit.py` - Backup-first commit with three-tier protection  
+  
 - **Chat Health Check**: `chats/chat_health_check.py` - Timeline and validation reporting
 
 ### Process Standards
