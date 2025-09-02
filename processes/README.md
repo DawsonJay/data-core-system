@@ -196,7 +196,8 @@ processes/
 - **Comprehensive Validation**: Every aspect of data integrity is checked automatically
 
 ### Examples of Rule Enforcement
-- **Framework Compliance**: save_chat.py enforces Framework v1.1 automatically
+- **Framework Compliance**: save_chat.py enforces Framework v2.0 automatically
+- **Smart Deduplication**: save_chat.py enforces content-aware duplication prevention
 - **Backup Requirements**: git_commit.py MUST create backups before commits
 - **Content Validation**: All processes validate data quality before saving
 - **Zero Information Loss**: Gap detection prevents missing data
@@ -216,7 +217,7 @@ When creating new processes:
 ## Current Process Status
 
 ### Implemented & Ready
-- **Chat Save Process**: `chats/save_chat.py` - AI-first chat capture with Framework v1.1
+- **Chat Save Process**: `chats/save_chat.py` - AI-first chat capture with Framework v2.0 and smart deduplication
 - **Git Commit Process**: `git_commit.py` - Backup-first commit with three-tier protection  
 - **Chat Health Check**: `chats/chat_health_check.py` - Timeline and validation reporting
 

@@ -61,43 +61,48 @@ This system exists to perfectly preserve and protect irreplaceable development d
 - **Additional commands** will be added as new data types are implemented
 
 ### Chat Save Instructions for AI Systems
-**CRITICAL:** Before starting any chat, AI systems MUST read `processes/chats/README.md` for the mandatory live recording protocol.
+**CRITICAL:** Before starting any chat, AI systems MUST read `processes/chats/README.md` for the mandatory Natural Value Extraction protocol.
+
+**Natural Value Extraction System:**
+- AI naturally identifies valuable content during conversation
+- AI maintains a value log of insights, decisions, and important content
+- AI provides value log to save process when requested
+- System creates Framework v2.0 compliant records with context snapshots + new insights
+- **Smart Deduplication:** System intelligently separates context (narrative building) from value (specific insights)
+- **Context Evolution:** Allows similarity for narrative continuity (90%+ tolerance)
+- **Value Deduplication:** Prevents repetition of specific insights (strict blocking)
+- **Quick Saves:** Enables frequent captures for short work sessions
 
 **For AI Systems Using Terminal Tools:** When calling `run_terminal_cmd`, always include `is_background: false` parameter:
 ```json
 {
-  "command": "python3 data_core.py save chat --file temp/chat_memory_batch_001.txt",
+  "command": "python3 data_core.py save chat",
   "is_background": false
 }
 ```
 
 **Finding the Last Save:** Check `chats/` folder for the most recent `chat-YYYY-MM-DD-HH-MM.md` file to see when the last conversation was saved.
 
-### Handling Long Conversations
-**For conversations that exceed command line limits, use the file input method:**
+### How Natural Value Extraction Works
 
-```bash
-# Create temp file with full conversation
-echo "User: [full conversation content]" > temp/conversation_$(date +%Y%m%d_%H%M%S).txt
+**During Conversation:**
+- AI reads `reference/value_definitions.md` and `reference/value_patterns.md`
+- AI naturally identifies valuable content using reference file guidance
+- AI maintains value log without disrupting workflow
+- AI captures insights, decisions, and important content as they emerge
 
-# Save using file input
-python data_core.py save chat --file temp/conversation_*.txt
+**When Saving:**
+- AI provides comprehensive value log to save process
+- Save process checks for duplication against previous records
+- New record contains: current context snapshot + new unique insights
+- System maintains gapless history while preventing redundancy
 
-# Temp file is automatically cleaned up after successful save
-```
-
-**Benefits of file input:**
-- **No length limits** - Handle conversations of any size
-- **Better reliability** - No shell escaping issues
-- **Same processing** - Identical value detection and preservation
-- **Automatic cleanup** - Temp files removed after save
-
-**Example:**
-```bash
-python data_core.py save chat "User: I think we should redesign the speaker detection system to use structured parsing instead of complex pattern matching.
-Assistant: Perfect! You're absolutely right. Let me redesign this to use structured conversation input with clear speaker tags and remove all the unnecessary speech pattern recognition complexity.
-User: yes, and remove the use of the speech recognition reference"
-```
+**Benefits:**
+- **No workflow disruption** - saves happen when you choose
+- **Natural value recognition** - leverages AI's inherent abilities
+- **Quality assurance** - process validates everything before saving
+- **Continuous learning** - reference files improve over time
+- **Gapless history** - maintains complete development narrative
 
 ### Workflow
 1. **Plan your data** - decide what type of information you want to capture
@@ -124,22 +129,26 @@ User: yes, and remove the use of the speech recognition reference"
 - **Professional Branding:** Develop authentic voice and technical philosophy based on preserved reasoning
 
 ### Framework v2.0 Standards
-- **Enhanced Content Capture:** Preserves authentic voice, design reasoning, and technical discussions
-- **Technical Specifications Section:** System architecture, file metrics, configuration details
+- **Smart Content Structure:** Context Snapshot (narrative building) + New Insights (specific value)
+- **Content-Aware Deduplication:** Distinguishes between context evolution and value duplication
+- **Context Evolution:** High similarity tolerance (90%+) for narrative continuity
+- **Value Deduplication:** Strict blocking of repeated insights and decisions
 - **Enhanced Validation:** Minimum 50 characters per section, comprehensive content quality checks
 - **File Integrity Verification:** Read-back validation to ensure content is actually preserved
 - **Comprehensive Capture:** Real conversation content with intelligent value extraction
 - **Temporal Organization:** chat-YYYY-MM-DD-HH-MM.md naming with UUID metadata
 - **Professional Quality:** Portfolio-ready documentation with preserved authentic content
+- **Quick Save Support:** Enables frequent captures for short work sessions
 
 ## Data Type Systems
 
 ### Chat System
-- **Purpose:** Comprehensive reports with temporal filenames, UUID identification, zero-gap coverage, and enhanced value detection
+- **Purpose:** Comprehensive reports with temporal filenames, UUID identification, zero-gap coverage, and smart content-aware deduplication
 - **Status:** Implemented and ready to use with Framework v2.0
 - **How to use:** `python data_core.py save chat`
-- **Framework Version:** 2.0 with Value-Preserved Content section and pattern recognition
+- **Framework Version:** 2.0 with Context Snapshot + New Insights structure and smart deduplication
 - **Portfolio Integration:** Captures authentic voice, design reasoning, and technical discussions for portfolio building and professional development
+- **Smart Deduplication:** Distinguishes between context evolution (narrative building) and value duplication (specific insights)
 
 ### Git Commit System
 - **Purpose:** Safe version control with mandatory backup protection and zero information loss

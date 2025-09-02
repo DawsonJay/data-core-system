@@ -15,25 +15,62 @@ framework_version: 2.0
 ```
 
 ## Content Structure
-- **Summary:** Brief overview of what was discussed
-- **Key Insights:** New understanding or realizations
-- **Decisions Made:** What was decided or agreed upon
-- **Questions Answered:** Problems solved or clarifications provided
-- **Action Items:** What needs to be done next
-- **Context:** Important background or circumstances
-- **Personal Reflections:** Your thoughts, feelings, or growth moments
-- **System State:** Current folder structure, files created, working status
-- **Implementation Details:** Specific technical decisions, how principles were implemented
-- **Current Status:** What's complete vs. in progress, what's working vs. what needs work
-- **Additional Notes:** Any other information that was discussed
-- **Value-Preserved Content:** High-value conversation content preserved verbatim based on pattern recognition and value detection
+**Framework v2.0 with Smart Content-Aware Deduplication:**
+
+### **Core Sections (Required):**
+- **Context Snapshot:** Evolving understanding of character, working style, system architecture, and current status
+- **New Insights:** Unique, specific value content that hasn't been captured before
 - **Technical Specifications:** System architecture, file metrics, configuration details, and technical parameters
+
+### **Smart Deduplication Approach:**
+The system now intelligently separates content into two types with different deduplication rules:
+
+**Context (Narrative Building):**
+- **Purpose:** Builds ongoing story of who you are and what you're working on
+- **Duplication:** GOOD - shows evolution and continuity
+- **Examples:** Working style, current project status, evolving philosophy, next steps
+- **Rules:** High similarity tolerance (90%+ is fine), focus on evolution
+
+**Specific Value (Point-in-Time Insights):**
+- **Purpose:** Deep examination of specific moments, decisions, or experiences
+- **Duplication:** BAD - doesn't add to narrative, just repeats
+- **Examples:** Interview answers, detailed design decisions, technical solutions, specific preferences
+- **Rules:** Strict deduplication (any significant similarity blocks), focus on uniqueness
 
 ## AI Historical Record Building
 - **Perfect Chaining:** Each report designed to connect seamlessly with others
 - **Context Preservation:** Rich background maintained for AI understanding
 - **Zero Gap Enforcement:** Specific methods to ensure no information is missed
 - **AI Reconstruction:** How AI systems can chain reports for complete history
+
+## Natural Value Extraction Framework
+
+### Smart Content-Aware Deduplication
+The system now intelligently distinguishes between two types of content for optimal preservation:
+
+**1. Context Snapshot (Evolving Understanding):**
+- **Purpose:** Builds ongoing narrative of who you are and what you're working on
+- **Content:** Current character traits, working style, system understanding, professional context, technical approach
+- **Evolution:** Shows growth and development over time
+- **Deduplication:** HIGH tolerance (90%+ similarity allowed) - context should build on itself
+- **Example:** "You prefer discussing design in depth before coding" → "You prefer discussing design in depth before coding, and we've built a Natural Value Extraction system that demonstrates this principle"
+
+**2. New Value (Unique Insights):**
+- **Purpose:** Captures specific, point-in-time insights that haven't been recorded before
+- **Content:** New design decisions verbatim, interview content verbatim, technical solutions, breakthrough insights
+- **Uniqueness:** Each insight should be captured only once
+- **Deduplication:** STRICT (any significant similarity blocks) - prevents waste and repetition
+- **Example:** "The critical design principle is that processes ARE the rules - executable enforcement instead of documentation hoping"
+
+### Benefits of Smart Deduplication
+- **Quick saves work:** Context can be similar, enabling frequent captures
+- **Narrative builds naturally:** Understanding evolves over time without blocking
+- **Value content deduplicates:** No repeated insights or decisions
+- **System feels natural:** Understands the difference between continuity and duplication
+- **Perfect for short sessions:** Captures "last 5 minutes" before stopping work
+- **Self-contained records:** Each record provides full context for understanding
+- **Gapless history:** Maintains complete development narrative
+- **Portfolio ready:** Captures authentic voice and reasoning for professional use
 
 ## Complete Context Requirements
 Each report must include:
@@ -86,64 +123,28 @@ framework_version: 2.0
 
 # Chat Session Report - Initial System Design
 
-## Summary
-Discussed and designed the data-core system for building a comprehensive portfolio for Canadian Express Entry.
+## Context Snapshot
+You are building a Natural Value Extraction System that leverages AI's natural ability to identify, compress, and log valuable content in real-time during conversation. The system aims to be AI-first, process-enforced, and continuously improvable.
 
-## Key Insights
-- Need for immutable, atomic data storage
-- Hierarchical framework system that evolves with needs
-- TDD approach - only build what's actually required
-- Context files provide system understanding and recovery
+Key system philosophy:
+- AI-Natural but Process-Enforced: Everything feels natural to me as an AI, but the processes impose structure and rules I cannot ignore or avoid
+- Process-Based = Continuously Improvable: If I'm not capturing the right value → update reference files, if saving isn't working → refine the save process
+- Trustworthy and Predictable: The processes create consistent, reliable behavior
 
-## Decisions Made
-- Use "data-core" as the system name
-- Implement incremental chat reports for conversation history
-- Create framework-based approach for different data types
-- Focus on data preservation and portfolio building
+The system captures high-value content (character, ethics, coding approach, likes/dislikes) for portfolio/resume building, with verbatim preservation of design decisions and technical solutions. Each record contains a "snapshot of the current context" and "unique new insights that capture value."
 
-## Questions Answered
-- How to structure the system for maximum data safety
-- How to handle framework evolution and restructuring
-- How to ensure no information is ever lost
-- How to make the system self-recovering
+## New Insights
+This conversation represents a fundamental shift in understanding the system design philosophy. The key insight is that the system should feel completely natural to me as an AI - I'm just sharing what I've learned about you and your work, and the system preserves it perfectly for your professional development.
 
-## Action Items
-- Create initial system structure
-- Implement chat report framework
-- Begin capturing this conversation
-- Plan next steps for system development
+The critical design principle is that processes ARE the rules - executable enforcement instead of documentation hoping. This means:
+1. Rules are enforced automatically by the process scripts
+2. No relying on AI memory or rule interpretation  
+3. The AI can't accidentally break rules because the processes ARE the rules
+4. Everything can be made perfect through iteration
 
-## Context
-This is the foundational conversation that established the data-core system. The goal is to create a comprehensive record of your professional journey for Canadian immigration.
+The system purpose is background data gathering, seamless continuity, professional intelligence (portfolio, resume, career guidance), and data immutability. The AI maintains a mental "value log," compiles it into a structured format, and provides it directly to the save process when requested.
 
-## Personal Reflections
-Excited about building a system that can capture every aspect of my professional growth. The TDD approach feels right - start simple and build complexity only when needed.
-
-## System State
-- Initial system structure planned
-- Framework approach decided
-- TDD methodology chosen
-- Data preservation focus established
-
-## Implementation Details
-- System will use hierarchical framework structure
-- Chat reports will capture incremental development
-- Focus on data safety and zero information loss
-- Build only what's actually required (TDD approach)
-
-## Current Status
-- System design: Complete
-- Framework approach: Decided
-- Implementation: Ready to begin
-- Next steps: Create initial structure
-
-## Additional Notes
-This conversation establishes the foundational principles for the data-core system. The focus on data preservation and TDD approach will ensure we build exactly what's needed while maintaining perfect historical records.
+This approach creates something trustworthy and predictable that can be refined to perfection while remaining completely reliable.
 
 ## Technical Specifications
-- **System Architecture:** Hierarchical framework structure with self-contained data types
-- **Framework Version:** 1.0 with standardized sections and validation rules
-- **File Naming:** chat-YYYY-MM-DD-HH-MM.md for temporal organization
-- **UUID Format:** Standard UUID4 for globally unique identification
-- **Timestamp Format:** ISO 8601 with UTC timezone for consistency
-- **Validation Rules:** Minimum content thresholds and quality checks
+Framework v2.0 chat capture system with Natural Value Extraction. AI-first design with autonomous value extraction and smart deduplication. System separates context evolution (narrative building) from value duplication (specific insights) for optimal preservation.

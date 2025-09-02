@@ -23,6 +23,13 @@ This file contains patterns and indicators that help identify valuable content d
 - **"I prefer"** → Personal preferences and values (confidence: 70%)
 - **"The way I see it"** → Perspective and reasoning (confidence: 75%)
 
+### **System Architecture Signals**
+- **"The entire point"** → Core system design principle (confidence: 95%)
+- **"This was completely the wrong approach"** → Critical design lesson learned (confidence: 95%)
+- **"Processes ARE the rules"** → Fundamental system philosophy (confidence: 95%)
+- **"AI-first design"** → System architecture principle (confidence: 90%)
+- **"Continuously improvable"** → System design philosophy (confidence: 90%)
+
 ### **Purpose & Intent Signals**
 - **"Purpose"** → Goal definition and context (confidence: 80%)
 - **"The reason"** → Explanatory reasoning (confidence: 75%)
@@ -52,10 +59,15 @@ This file contains patterns and indicators that help identify valuable content d
 
 ## Content Type Recognition
 
-### **Design Discussions**
-**Indicators:** "how should", "restructure", "design", "approach", "architecture"
-**Value:** High - Contains decision-making processes and technical reasoning
-**Preserve:** Complete reasoning chains and alternatives considered
+### **Design Discussions (VERBATIM PRESERVATION REQUIRED)**
+**Indicators:** "how should", "restructure", "design", "approach", "architecture", "let's discuss", "I want to think through"
+**Value:** Very High - Contains complete decision-making processes and technical reasoning
+**Preserve:** EVERY WORD of reasoning chains, alternatives considered, trade-offs analyzed, and decision rationale
+
+### **Reasoning Chains & Thought Processes**
+**Indicators:** "because", "the reason is", "let me think through", "here's my reasoning", "alternatives are"
+**Value:** Very High - Shows complete problem-solving and decision-making processes
+**Preserve:** Complete thought processes, step-by-step reasoning, and alternative analysis
 
 ### **Requirements Gathering**
 **Indicators:** "I want", "I need", "must have", "requirements", "specifications"
@@ -66,6 +78,12 @@ This file contains patterns and indicators that help identify valuable content d
 **Indicators:** "I believe", "my philosophy", "the way I work", "my approach"
 **Value:** Very High - Core personality and working style insights
 **Preserve:** Verbatim expressions of personal approach and values
+
+### **System Design Philosophy**
+**Indicators:** "the entire point", "this was completely the wrong approach", "processes ARE the rules", "AI-first design", "continuously improvable"
+**Value:** Extremely High - Core system architecture and design principles
+**Preserve:** VERBATIM - Every word about why systems are built certain ways and how processes enforce rules
+**Examples:** "The entire point of having the save as a process is that it has to be followed not worked around"
 
 ### **Problem-Solution Narratives**
 **Indicators:** "the problem is", "we need to fix", "the solution", "here's how"
@@ -82,11 +100,18 @@ This file contains patterns and indicators that help identify valuable content d
 ## Recognition Accuracy Tracking
 
 ### **Pattern Confidence Levels**
-- **90%+:** Extremely reliable indicators, always preserve content
-- **80-89%:** Very reliable, preserve with high priority
+- **90%+:** Extremely reliable indicators, always preserve content VERBATIM
+- **80-89%:** Very reliable, preserve with high priority VERBATIM
 - **70-79%:** Reliable, preserve unless content is routine
 - **60-69%:** Moderately reliable, evaluate content quality
 - **<60%:** Low reliability, use as supporting indicator only
+
+### **VERBATIM PRESERVATION REQUIREMENTS**
+- **Design discussions:** Capture EVERY WORD of reasoning, alternatives, and trade-offs
+- **Reasoning chains:** Preserve complete thought processes, not summaries
+- **Problem-solving:** Maintain step-by-step thinking and alternative analysis
+- **Authentic voice:** Keep your exact communication style and reasoning patterns
+- **Portfolio value:** These verbatim insights are essential for professional development
 
 ### **False Positive Patterns**
 *To be populated as system learns*
@@ -129,6 +154,21 @@ This file contains patterns and indicators that help identify valuable content d
 ---
 
 ## Integration Notes
+
+
+- **2025-09-02:** AI value log pattern: 5 high-value sections identified (discovered in Natural Value Extraction)
+
+
+- **2025-09-02:** AI value log pattern: 5 high-value sections identified (discovered in Natural Value Extraction)
+
+
+- **2025-09-02:** AI value log pattern: 17 high-value sections identified (discovered in Natural Value Extraction)
+
+
+- **2025-09-02:** AI value log pattern: 20 high-value sections identified (discovered in Natural Value Extraction)
+
+
+- **2025-09-02:** AI value log pattern: 20 high-value sections identified (discovered in Natural Value Extraction)
 
 ### **For save_chat.py:**
 - Load this file before conversation analysis

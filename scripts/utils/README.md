@@ -58,7 +58,7 @@ For full system context, rules, and philosophy, see: `../../README.md`
 
 **Functions:**
 - `validate_memory_file_format(content)` - Check format compliance (User:/Assistant: structure)
-- `validate_gapless_history(new_file, previous_file)` - Ensure continuity between memory files
+- `validate_gapless_history(new_file, previous_file)` - Ensure continuity between chat records (deprecated - replaced by Natural Value Extraction)
 - `validate_memory_file_creation(file_path, content)` - Verify file creation success
 - `get_last_message(content)` - Extract last message for continuity checking
 - `get_first_message(content)` - Extract first message for continuity checking
